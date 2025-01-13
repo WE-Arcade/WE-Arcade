@@ -4,7 +4,8 @@
 <a href="https://docs.google.com/document/d/1RuEi2gao1nfjfOyH-372RKitEktuo3UULBb3pYZbbPI/edit?usp=sharing"> Google Docs </a><br>
 
 ## Organizational Structure
-<img width="2248" alt="WE Arcade(1)" src="https://github.com/user-attachments/assets/51af0346-a978-484c-bf99-2902178ba4c6" />
+<img width="2248" alt="WE Arcade(1)" src="https://github.com/user-attachments/assets/07befeb9-3fd2-4e00-8919-261b70f4ef2d" />
+
 
 ## Design
 <a href="https://in.pinterest.com/artsybixchh/we-arcade/?invite_code=a38ff3432ef4418fb9b8639d4738f93e&sender=1130474081372707790"> Pintrest Link for elements</a><br>
