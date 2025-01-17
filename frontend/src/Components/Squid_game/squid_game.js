@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, useRef } from "react";
 
 import Doll from "./doll.js";
 import Guard from "./guard.js";
-import Player from "./player.js";
+import PlayerRow from "./player_row.js";
+
+
 
 function PlayGroundTopSection(){
     return (
@@ -10,12 +12,13 @@ function PlayGroundTopSection(){
                     height: '20vh',
                     width: '80%',
                     position: 'relative',
-                    marginTop: '50px',
+                    marginTop: '30px',
                     display: 'flex',
                     justifyContent: 'center'}}>
             <Guard />
             <Doll />
             <Guard />
+            
         </div>
     )
 }
@@ -36,6 +39,8 @@ function BoundaryLine({ Customstyle }) {
 
 
 
+const toBeKilledArray = [true, false, true, false, true];
+
 function SquidGame() {
     return (
         <>
@@ -52,6 +57,7 @@ function SquidGame() {
                 
                 <PlayGroundTopSection/>
                 <BoundaryLine Customstyle={{marginTop: "35px"}}/>
+                <PlayerRow toBeKilledArray={toBeKilledArray} />
                 <BoundaryLine Customstyle={{marginTop: "auto", marginBottom: "35px"}}/>
             </div>
         </>
