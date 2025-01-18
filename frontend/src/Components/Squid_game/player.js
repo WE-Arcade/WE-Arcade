@@ -1,6 +1,9 @@
 import React, { Component } from "react";
+
 import PlayerAliveImage from "../../Assets/alive_player_one.png";
 import PlayerDeadImage from "../../Assets/dead_player_one.png";
+
+import gameConfig from "../../Configs/game_config.json";
 
 class Player extends Component {
   constructor(props) {
@@ -15,15 +18,17 @@ class Player extends Component {
     this.timeoutId = null;
     this.stopTimeoutId = null;
     this.animationEndTimeoutId = null;
+
+    this.animationDuration = gameConfig.player.animationDuration;
+    this.toBeKilledTimeout = gameConfig.player.toBeKilledTimeout;
+
   }
 
   static defaultProps = {
     left: "50%",
-    animationDuration: 5000,
-    toBeKilledTimeout: 2000,
     aliveImage: PlayerAliveImage,
     deadImage: PlayerDeadImage,
-    bottomPercentage: 10,
+    bottomPercentage: 32,
   };
 
   startFalling = () => {
@@ -42,7 +47,7 @@ class Player extends Component {
             this.timeoutId = setTimeout(() => {
               this.stopFalling();
               this.setState({ imageSrc: this.props.deadImage });
-            }, this.props.toBeKilledTimeout);
+            }, this.toBeKilledTimeout);
           } else {
             this.stopTimeoutId = setTimeout(() => {
               this.setState({ imageSrc: this.props.aliveImage });
@@ -52,7 +57,7 @@ class Player extends Component {
 
           this.animationEndTimeoutId = setTimeout(() => {
             this.stopFalling();
-          }, this.props.animationDuration);
+          }, this.animationDuration);
         }
       );
     }

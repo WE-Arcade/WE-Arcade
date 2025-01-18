@@ -22,9 +22,9 @@ const PlayerRow = forwardRef(({ toBeKilledArray }, ref) => {
         <Player
           key={index}
           left={`${10 + index * 15}%`}
-          animationDuration={5000}
-          toBeKilledTimeout={2000}
-          bottomPercentage={32}
+          // animationDuration={5000}
+          // toBeKilledTimeout={2000}
+          // bottomPercentage={32}
           to_be_killed={toBeKilled}
           ref={(el) => (playerRefs.current[index] = el)}
         />

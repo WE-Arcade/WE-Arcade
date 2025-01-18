@@ -1,0 +1,10 @@
+{
+    "player": {
+      "animationDuration": 5000,
+      "toBeKilledTimeout": 2000
+    },
+    "doll": {
+        "interval": 5000
+    }
+  }
+  
