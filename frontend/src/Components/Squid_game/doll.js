@@ -14,7 +14,8 @@ class Doll extends Component {
     };
 
     this.turnTimeout = null;
-    this.interval = gameConfig.doll.interval;
+    this.moveInterval = gameConfig.doll.moveInterval;
+    this.freezeInterval = gameConfig.doll.freezeInterval;
   }
 
   turn = () => {
@@ -31,12 +32,22 @@ class Doll extends Component {
     this.turnTimeout = setTimeout(() => {
       this.turn();
       this.turnTimeout = null;
-    }, this.interval);
+    }, this.moveInterval);
+
+    this.turnTimeout = setTimeout(() => {
+      this.turn();
+      this.turnTimeout = null;
+    }, this.moveInterval + this.freezeInterval);
+
+    this.turnTimeout = setTimeout(() => {
+      this.turn();
+      this.turnTimeout = null;
+    }, 2 * this.moveInterval + this.freezeInterval);
   };
 
-  componentDidMount() {
-    this.turnAfterDelay();
-  }
+  // componentDidMount() {
+  //   this.turnAfterDelay();
+  // }
 
   componentWillUnmount() {
     if (this.turnTimeout) {
