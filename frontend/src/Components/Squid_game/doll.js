@@ -1,38 +1,50 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 import DollPlayerFacingImage from "../../Assets/doll_player_facing.png";
 import DollWallFacingImage from "../../Assets/doll_wall_facing.png";
 
 class Doll extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            player_facing: false,
-        };
-    }
-
-    turn = () => {
-        this.setState(prevState => ({
-            player_facing: !prevState.player_facing
-        }));
+    this.state = {
+      player_facing: false,
     };
 
-    render() {
-        console.log(this.state.player_facing);
-        return (
-            <>
-                {/* Render the image based on the value of facing_players */}
-                <img 
-                    src={this.state.player_facing ? DollPlayerFacingImage : DollWallFacingImage} 
-                    height="100%" 
-                    alt="Doll"
-                />
-                {/* Button to toggle the state */}
-                {/* <button onClick={this.turn}>Turn</button> */}
-            </>
-        );
+    this.turnInterval = null;
+  }
+
+  turn = () => {
+    this.setState((prevState) => ({
+      player_facing: !prevState.player_facing,
+    }));
+  };
+
+  turnRegularly = (interval) => {
+    if (this.turnInterval) {
+      clearInterval(this.turnInterval);
     }
+    
+    this.turnInterval = setInterval(() => {
+      this.turn();
+    }, interval);
+  };
+
+  render() {
+    return (
+      <>
+        <img
+          src={
+            this.state.player_facing
+              ? DollPlayerFacingImage
+              : DollWallFacingImage
+          }
+          height="100%"
+          alt="Doll"
+        />
+      </>
+    );
+  }
 }
 
 export default Doll;

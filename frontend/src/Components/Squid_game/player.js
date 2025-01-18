@@ -14,12 +14,12 @@ class Player extends Component {
     this.intervalId = null;
     this.timeoutId = null;
     this.stopTimeoutId = null;
-    this.animationEndTimeoutId = null; // Added to handle the animation duration timeout
+    this.animationEndTimeoutId = null;
   }
 
   static defaultProps = {
     left: "50%",
-    animationDuration: 5000, // total duration of the animation
+    animationDuration: 5000,
     toBeKilledTimeout: 2000,
     aliveImage: PlayerAliveImage,
     deadImage: PlayerDeadImage,
@@ -38,24 +38,21 @@ class Player extends Component {
         () => {
           this.intervalId = setInterval(this.updatePosition, 50);
 
-          // Check if the player is to be killed
           if (this.props.to_be_killed) {
             this.timeoutId = setTimeout(() => {
               this.stopFalling();
               this.setState({ imageSrc: this.props.deadImage });
             }, this.props.toBeKilledTimeout);
           } else {
-            // If not to be killed, stop for a certain time and then continue falling
             this.stopTimeoutId = setTimeout(() => {
               this.setState({ imageSrc: this.props.aliveImage });
-              this.startFalling();  // Restart the falling process
-            }, 2000); // Stop for 2 seconds before moving again (you can adjust this value)
+              this.startFalling();
+            }, 2000);
           }
 
-          // Handle animation duration stop
           this.animationEndTimeoutId = setTimeout(() => {
-            this.stopFalling();  // Stop falling after the animation duration
-          }, this.props.animationDuration); // Stop after the specified animation duration
+            this.stopFalling();
+          }, this.props.animationDuration);
         }
       );
     }
@@ -67,7 +64,7 @@ class Player extends Component {
         clearInterval(this.intervalId);
         clearTimeout(this.timeoutId);
         clearTimeout(this.stopTimeoutId);
-        clearTimeout(this.animationEndTimeoutId); // Clear the animation end timeout
+        clearTimeout(this.animationEndTimeoutId);
       });
     }
   };
@@ -82,7 +79,7 @@ class Player extends Component {
     clearInterval(this.intervalId);
     clearTimeout(this.timeoutId);
     clearTimeout(this.stopTimeoutId);
-    clearTimeout(this.animationEndTimeoutId); // Clean up the timeout on unmount
+    clearTimeout(this.animationEndTimeoutId);
   }
 
   render() {
@@ -90,7 +87,7 @@ class Player extends Component {
     const imageStyle = {
       position: "relative",
       top: `${this.state.top}px`,
-      left: left, // Using dynamic left value from props
+      left: left,
       transform: "translateX(-50%)",
       width: "56px",
       height: "119px",

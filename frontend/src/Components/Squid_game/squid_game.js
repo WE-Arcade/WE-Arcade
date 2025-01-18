@@ -5,8 +5,7 @@ import Guard from "./guard.js";
 import PlayerRow from "./player_row.js";
 
 
-
-function PlayGroundTopSection(){
+function PlayGroundTopSection({dollRef}){
     return (
         <div style={{backgroundColor: '#FFFFFF',
                     height: '20vh',
@@ -16,7 +15,7 @@ function PlayGroundTopSection(){
                     display: 'flex',
                     justifyContent: 'center'}}>
             <Guard />
-            <Doll />
+            <Doll ref={dollRef} />
             <Guard />
             
         </div>
@@ -42,22 +41,36 @@ function BoundaryLine({ Customstyle }) {
 const toBeKilledArray = [true, false, true, false, true];
 
 function SquidGame() {
+    const playerRowRef = useRef(null);
+    const dollRef = useRef(null);
+
+    const startGame = () => {
+        if (playerRowRef.current) {
+            playerRowRef.current.startFallingAllPlayers();
+        }
+        if (dollRef.current) {
+            dollRef.current.turnRegularly(5000);
+        }
+    };
+
+
     return (
         <>
             <div style={{
                 backgroundColor: '#E8D897D1',
-                height: '100vh',  // 100% height of the viewport
-                width: '30%',      // 30% width
-                position: 'absolute', // Ensures it's positioned on the left
-                left: 0,            // Aligns it to the left side
+                height: '100vh',
+                width: '30%',
+                position: 'absolute',
+                left: 0,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center'
             }}>
                 
-                <PlayGroundTopSection/>
+                <PlayGroundTopSection dollRef={dollRef}/>
                 <BoundaryLine Customstyle={{marginTop: "35px"}}/>
-                <PlayerRow toBeKilledArray={toBeKilledArray} />
+                <PlayerRow ref={playerRowRef} toBeKilledArray={toBeKilledArray} />
+                <button onClick={startGame}>Start Game</button>
                 <BoundaryLine Customstyle={{marginTop: "auto", marginBottom: "35px"}}/>
             </div>
         </>
