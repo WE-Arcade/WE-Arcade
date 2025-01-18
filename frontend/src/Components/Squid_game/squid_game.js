@@ -16,7 +16,7 @@ function SquidGame() {
             playerRowRef.current.startFallingAllPlayers();
         }
         if (dollRef.current) {
-            dollRef.current.turnRegularly(5000);
+            dollRef.current.turnAfterDelay();
         }
     };
 

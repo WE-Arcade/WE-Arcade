@@ -13,7 +13,7 @@ class Doll extends Component {
       player_facing: false,
     };
 
-    this.turnInterval = null;
+    this.turnTimeout = null;
     this.interval = gameConfig.doll.interval;
   }
 
@@ -23,21 +23,24 @@ class Doll extends Component {
     }));
   };
 
-  turnRegularly = () => {
-    if (this.turnInterval) {
-      clearInterval(this.turnInterval);
+  turnAfterDelay = () => {
+    if (this.turnTimeout) {
+      clearTimeout(this.turnTimeout);
     }
 
-    this.turnInterval = setInterval(this.turn, this.interval);
+    this.turnTimeout = setTimeout(() => {
+      this.turn();
+      this.turnTimeout = null;
+    }, this.interval);
   };
 
   componentDidMount() {
-    this.turnRegularly();
+    this.turnAfterDelay();
   }
 
   componentWillUnmount() {
-    if (this.turnInterval) {
-      clearInterval(this.turnInterval);
+    if (this.turnTimeout) {
+      clearTimeout(this.turnTimeout);
     }
   }
 
