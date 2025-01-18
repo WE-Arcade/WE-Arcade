@@ -1,0 +1,13 @@
+{
+  "player": {
+    "animationDuration": 8000,
+    "toBeKilledTimeout": 5000,
+    "pauseDuration": 4000,
+    "continueFallingDuration": 5500,
+    "updatePosVal": 150
+  },
+  "doll": {
+    "moveInterval": 5000,
+    "freezeInterval": 4000
+  }
+}
