@@ -1,0 +1,20 @@
+We have started the work and we have made sub teams under the Catalogue Team
+
+1. Content Team: Responsible for drafting and finalizing yearbook write-ups, including individual profiles, event highlights, and any other textual content.
+2. Design Team: Focused on creating visually appealing layouts, selecting themes, and ensuring cohesive integration of text and images.
+3. Data Collection Team: Tasked with gathering accurate and comprehensive data from the cohort, including photographs, personal details, and other relevant inputs.
+
+Data Collection
+Status: Initiated
+Data collection has begun for the entire cohort.
+Coordination with individuals for missing or incomplete data is ongoing.
+
+Design
+Status: In Progress
+Preliminary designs and layouts have been created.
+Currently refining the design elements and experimenting with different themes to ensure alignment with the yearbook’s purpose and audience.
+Collaboration with the Content Team for integration is underway.
+
+Content Filtration
+Status: In Progress
+Integration of content into the design framework is actively being worked on.
