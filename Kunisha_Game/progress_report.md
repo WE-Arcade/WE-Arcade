@@ -1,8 +1,15 @@
 # Progress Report
 ## 17-01-25 to 23-01-25
 ### Creative
-- Created a design document for Biryani Run
-[Game Design](https://docs.google.com/document/d/1rvKzNkj4W8KxxtjhK_7aQd0vUpRsHcf-asd7yU5oEj0/edit?usp=sharing)
+- Created a design document for Biryani Run 
+- [Link to Game Design](https://docs.google.com/document/d/1rvKzNkj4W8KxxtjhK_7aQd0vUpRsHcf-asd7yU5oEj0/edit?usp=sharing)
 ### Technical
-- Decided to move forward with Unity
+- Decided to move forward with Unity 
 - Finished setting up the software
+
+## Next week's goals:
+### Creative
+- Prepare a design document for Corporate Jargon
+### Technical
+- Start the development of background and basic character physics
+
