@@ -1,3 +1,4 @@
+17-01-25 to 23-01-25
 We have started the work and we have made sub teams under the Catalogue Team
 
 1. Content Team: Responsible for drafting and finalizing yearbook write-ups, including individual profiles, event highlights, and any other textual content.
@@ -18,3 +19,18 @@ Collaboration with the Content Team for integration is underway.
 Content Filtration
 Status: In Progress
 Integration of content into the design framework is actively being worked on.
+
+Here’s a refined version of your progress update:  
+
+---
+
+24-01-25 to 30-01-25
+
+We have made significant progress this week:  
+
+1. The data collection forms for cohort members have been closed, and we are now awaiting responses from the mentors.  
+2. The content team is actively curating the catalogue, filtering data, and selecting relevant content.  
+3. The design team is nearing completion, with only final adjustments and minor refinements remaining.  
+
+
+
