@@ -1,4 +1,5 @@
 17-01-25 to 23-01-25
+
 We have started the work and we have made sub teams under the Catalogue Team
 
 1. Content Team: Responsible for drafting and finalizing yearbook write-ups, including individual profiles, event highlights, and any other textual content.
