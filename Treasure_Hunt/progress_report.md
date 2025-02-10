@@ -15,6 +15,6 @@
 * Sign-Up Page: Implementation of the user registration process.
 * Session Management: Ensuring seamless user experience.
 * Levels Page: Adding Questions, Answers, Clue Pop-ups, Power-ups Count, and Mini Map Buttons.
-H* ome Page & Story Page: Replicating the creative team’s finalized design.
+* Home Page & Story Page: Replicating the creative team’s finalized design.
 
 
