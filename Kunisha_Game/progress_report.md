@@ -1,15 +1,17 @@
 # Progress Report
-## 24-01-25 to 30-01-25
+
+## 30-01-25 to 09-02-25
 ### Creative
-- Created a design document for Corporate Jargon 
-- [Link to Game Design](https://docs.google.com/document/d/1Zl1ldAqs4jhswg-g_I0y53x0pGUXM7YkAmxm898NoUI/edit?usp=drivesdk)
+- Research assets that can be used by the technical team
 ### Technical
-- Biryani Run: Found a unity tutorial with similar requirements
-- Corporate Jargon: Considering using ReactJS instead of Unity
+- Decided to go with phaser for Corporate Jargon
+- Made the basic structure of the game, such as the home page, levels page and characters - Corporate Jargon
+### Link to Detailed Progress Report
+[Progress Report](https://docs.google.com/spreadsheets/d/153lDdcGS_9UM8YSDqZ9JdvrU1kF2zKevYS-BXc3zG1Y/edit?usp=sharing)
 
 ## Next week's goals:
 ### Creative
-- Decide the final assets for both the games
+- Submit all basic assets to the technical team
 ### Technical
-- Start writing basic code and push to git
+- Basic game implementation of Biryani Run using a found tutorial
 
