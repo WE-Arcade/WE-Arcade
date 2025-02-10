@@ -1,15 +1,16 @@
 # Progress Report
-## 17-01-25 to 23-01-25
+## 30-01-25 to 09-02-25
 ### Creative
-- Created a design document for Biryani Run 
-- [Link to Game Design](https://docs.google.com/document/d/1rvKzNkj4W8KxxtjhK_7aQd0vUpRsHcf-asd7yU5oEj0/edit?usp=sharing)
+- Research assets that can be used by the technical team
 ### Technical
-- Decided to move forward with Unity 
-- Finished setting up the software
+- Decided to go with phaser for Corporate Jargon
+- Made the basic structure of the game, such as the home page, levels page and characters - Corporate Jargon
+### Link to Detailed Progress Report
+[Progress Report](https://docs.google.com/spreadsheets/d/153lDdcGS_9UM8YSDqZ9JdvrU1kF2zKevYS-BXc3zG1Y/edit?usp=sharing)
 
 ## Next week's goals:
 ### Creative
-- Prepare a design document for Corporate Jargon
+- Submit all basic assets to the technical team
 ### Technical
-- Start the development of background and basic character physics
+- Basic game implementation of Biryani Run using a found tutorial
 
