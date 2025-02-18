@@ -31,7 +31,23 @@ We have made significant progress this week:
 
 1. The data collection forms for cohort members have been closed, and we are now awaiting responses from the mentors.  
 2. The content team is actively curating the catalogue, filtering data, and selecting relevant content.  
-3. The design team is nearing completion, with only final adjustments and minor refinements remaining.  
+3. The design team is nearing completion, with only final adjustments and minor refinements remaining.
+
+---
+
+01-02-25 to 14-02-25
+
+The catalogue work is nearly complete, with only a few mentor responses pending.
+
+The following team members have contributed significantly to the catalogue:
+
+1. Aashna Dogra – Deputy Duckie, Content Team
+2. Divija Arora – Deputy Duckie, Design Team
+3. Pragati Das – Deputy Duckie, Data Collection Team
+4. Vaidika – Design Team
+5. Siri – Design Team
+6. Sailaja – Content Team
+7. Harini – Content Team
 
 
 
