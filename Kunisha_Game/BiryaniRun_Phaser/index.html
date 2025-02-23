@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biryani Run</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    <style>
+        body { margin: 0; font-family: 'Arial', sans-serif; }
+        .scoreboard {
+            font-size: 32px;
+            color: #ff0;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .game-over {
+            font-size: 64px;
+            color: #ff0000 !important; /* Bright red */
+            font-weight: 900;
+            font-family: 'Arial Black', Impact, sans-serif;
+            text-shadow: 
+                3px 3px 0 #8b0000, /* Dark red shadow for depth */
+                -1px -1px 0 #8b0000,
+                1px -1px 0 #8b0000,
+                -1px 1px 0 #8b0000;
+            -webkit-text-stroke: 2px #000; /* Black outline */
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let player, cursors, biryanis, bay_leafs, cokeGroup, kebabGroup, score = 0, scoreText, lives = 5, livesText;
+        let baseVelocity = -200;
+        let velocityMultiplier = 1;
+        let gameOver = false;
+
+        const config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            physics: {
+                default: 'arcade',
+                arcade: { gravity: { y: 0 }, debug: false }
+            },
+            scene: { preload, create, update }
+        };
+
+        const game = new Phaser.Game(config);
+
+        function preload() {
+            // Load background image for the start page
+            this.load.image('start_bg', 'assets/start_bg.jpg');
+
+            // Load game assets
+            this.load.image('road', 'assets/road.png');
+            this.load.image('player', 'assets/character.png');
+            this.load.image('biryani', 'assets/biryani.png');
+            this.load.image('bay_leaf', 'assets/bay_leaf.png');
+            this.load.image('restartButton', 'assets/restartButton.png');
+            this.load.image('startButton', 'assets/startButton.png');
+            this.load.image('coke', 'assets/coke.png');
+            this.load.image('kebab', 'assets/kebab.png');
+        }
+
+        function create() {
+            createStartScreen.call(this);
+        }
+
+        function createStartScreen() {
+            // Add background image for the start page
+            this.add.image(config.width / 2, config.height / 2, 'start_bg')
+                .setDisplaySize(config.width, config.height); // Scale to fit the screen
+
+            // Add title text
+            const title = this.add.text(config.width / 2, config.height / 3, 'Biryani Run', {
+                fontSize: '64px', fontFamily: 'Arial', color: '#FFD700', stroke: '#000', strokeThickness: 6
+            }).setOrigin(0.5);
+
+            // Add start button
+            const startButton = this.add.image(config.width / 2, config.height * 0.6, 'startButton')
+                .setOrigin(0.5)
+                .setScale(0.5)
+                .setInteractive()
+                .on('pointerdown', () => {
+                    title.destroy();
+                    startButton.destroy();
+                    createGameElements.call(this);
+                });
+
+            // Add hover effect for the start button
+            startButton.on('pointerover', () => startButton.setScale(0.6));
+            startButton.on('pointerout', () => startButton.setScale(0.5));
+        }
+
+        function createGameElements() {
+            this.road = this.add.tileSprite(config.width / 2, config.height / 2, config.width, config.height * 1.5, 'road');
+            player = this.physics.add.sprite(100, config.height / 2, 'player').setCollideWorldBounds(true).setScale(0.3);
+            cursors = this.input.keyboard.createCursorKeys();
+
+            biryanis = this.physics.add.group();
+            bay_leafs = this.physics.add.group();
+            cokeGroup = this.physics.add.group();
+            kebabGroup = this.physics.add.group();
+
+            this.time.addEvent({ delay: 1000, callback: spawnBiryani, callbackScope: this, loop: true });
+            this.time.addEvent({ delay: 1500, callback: spawnBayLeaf, callbackScope: this, loop: true });
+            this.time.addEvent({ delay: 10000, callback: spawnCoke, callbackScope: this, loop: true });
+            this.time.addEvent({ delay: 15000, callback: spawnKebab, callbackScope: this, loop: true });
+
+            scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '32px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
+            livesText = this.add.text(10, 50, 'Lives: 5', { fontSize: '32px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
+
+            this.physics.add.overlap(player, biryanis, collectBiryani, null, this);
+            this.physics.add.overlap(player, bay_leafs, hitBayLeaf, null, this);
+            this.physics.add.overlap(player, cokeGroup, collectCoke, null, this);
+            this.physics.add.overlap(player, kebabGroup, collectKebab, null, this);
+        }
+
+        function update() {
+            if (!player || gameOver) return;
+            this.road.tilePositionX += 4;
+
+            if (cursors.up.isDown) player.setVelocityY(-200);
+            else if (cursors.down.isDown) player.setVelocityY(200);
+            else player.setVelocityY(0);
+
+            cleanUpObjects(biryanis);
+            cleanUpObjects(bay_leafs);
+        }
+
+        function cleanUpObjects(group) {
+            group.getChildren().forEach(obj => { if (obj.x < -50) obj.destroy(); });
+        }
+
+        function spawnBiryani() {
+            let biryani = biryanis.create(config.width, Phaser.Math.Between(50, config.height - 50), 'biryani')
+                .setVelocityX(baseVelocity * velocityMultiplier)
+                .setScale(0.3);
+        }
+
+        function spawnBayLeaf() {
+            let bay_leaf = bay_leafs.create(config.width, Phaser.Math.Between(50, config.height - 50), 'bay_leaf')
+                .setVelocityX(baseVelocity * velocityMultiplier)
+                .setScale(0.3);
+        }
+
+        function spawnCoke() {
+    // Randomize spawn delay between 5 and 15 seconds
+    const spawnDelay = Phaser.Math.Between(5000, 15000);
+    this.time.delayedCall(spawnDelay, spawnCoke, [], this);
+
+    // Limit the number of active Coke objects
+    if (cokeGroup.getLength() >= 3) return;
+
+    // Spawn Coke at a random position across the top of the screen
+    const xPos = Phaser.Math.Between(100, config.width - 100);
+    const yPos = -50; // Spawn above the screen
+    const speed = Phaser.Math.Between(100, 200); // Randomize speed
+
+    let coke = cokeGroup.create(xPos, yPos, 'coke')
+        .setScale(0.5)
+        .setVelocityY(speed); // Move downward at a random speed
+}
+
+function spawnKebab() {
+    // Randomize spawn delay between 10 and 20 seconds
+    const spawnDelay = Phaser.Math.Between(10000, 20000);
+    this.time.delayedCall(spawnDelay, spawnKebab, [], this);
+
+    // Limit the number of active Kebab objects
+    if (kebabGroup.getLength() >= 2) return;
+
+    // Spawn Kebab at a random position across the top of the screen
+    const xPos = Phaser.Math.Between(100, config.width - 100);
+    const yPos = -50; // Spawn above the screen
+    const speed = Phaser.Math.Between(100, 200); // Randomize speed
+
+    let kebab = kebabGroup.create(xPos, yPos, 'kebab')
+        .setScale(0.5)
+        .setVelocityY(speed); // Move downward at a random speed
+}
+
+        function collectBiryani(player, biryani) {
+            if (Phaser.Math.Distance.Between(player.x, player.y, biryani.x, biryani.y) < 100) {
+                biryani.destroy();
+                updateScore(10);
+            }
+        }
+
+        function hitBayLeaf(player, bay_leaf) {
+            if (player.immune) return;
+
+            // Calculate the distance between the player and the bay leaf
+            const distance = Phaser.Math.Distance.Between(player.x, player.y, bay_leaf.x, bay_leaf.y);
+
+            // Only deduct a life if the player is close enough to the bay leaf
+            if (distance < 50) { // Adjust the distance threshold as needed
+                bay_leaf.destroy();
+                lives--;
+                livesText.setText('Lives: ' + lives);
+                if (lives === 0) endGame.call(this);
+            }
+        }
+
+        function collectCoke(player, coke) {
+            coke.destroy();
+            player.immune = true;
+            player.setTint(0xff0000);
+            this.time.delayedCall(5000, () => { player.immune = false; player.clearTint(); });
+        }
+
+        function collectKebab(player, kebab) {
+            kebab.destroy();
+            player.scoreMultiplier = 2;
+            this.time.delayedCall(10000, () => player.scoreMultiplier = 1);
+        }
+
+        function updateScore(points) {
+            score += points * (player.scoreMultiplier || 1);
+            scoreText.setText('Score: ' + score);
+            velocityMultiplier = 1 + (score * 0.01);
+        }
+
+        function endGame() {
+            gameOver = true;
+            this.physics.pause();
+            this.time.removeAllEvents();
+
+            this.add.text(config.width / 2, config.height / 2 - 50, 'Game Over!', {
+                fontSize: '64px',
+                fill: '#ff0000', // Bright red color
+                fontFamily: 'Arial Black, Impact, sans-serif',
+                stroke: '#8b0000', // Black outline
+                strokeThickness: 4,
+                shadow: {
+                    offsetX: 3,
+                    offsetY: 3,
+                    color: '#8b0000', // Dark red shadow
+                    blur: 0,
+                    stroke: true,
+                    fill: true
+                }
+            }).setOrigin(0.5);
+
+            this.add.image(config.width / 2, config.height * 0.7, 'restartButton')
+                .setOrigin(0.5)
+                .setInteractive()
+                .setScale(0.1)
+                .on('pointerdown', () => location.reload());
+        }
+    </script>
+</body>
+</html>
