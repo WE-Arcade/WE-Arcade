@@ -20,32 +20,43 @@
             }
 
             create(data) {
-                this.add.text(100, 100, 'Welcome to Corporate Jargon!', { fontSize: '32px', fill: '#fff' });
+                const centerX = this.cameras.main.centerX;
+                const centerY = this.cameras.main.centerY;
+
+                this.add.text(centerX, 100, 'Welcome to Corporate Jargon!', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
 
                 const characterKey = data && data.characterKey ? data.characterKey : 'characterCard1';
                 const characterViewKey = data && data.characterViewKey ? data.characterViewKey : 'characterCard1';
                 const currentImageIndex = data && data.currentImageIndex ? data.currentImageIndex : 0;
                 const characterViews = data && data.characterViews ? data.characterViews : ['characterCard1', 'characterCard1_rightSide', 'characterCard1_back', 'characterCard1_leftSide'];
 
-                this.selectedCharacterImage = this.add.image(150, 300, characterKey);
+                // Keep the character on the left side
+                this.selectedCharacterImage = this.add.image(150, centerY, characterKey);
                 this.selectedCharacterImage.setDisplaySize(150, 200);
 
-                const startGameButton = this.add.text(600, 200, 'Start Game', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+                const buttonSpacing = 80;
+                const buttonStartY = centerY - buttonSpacing;
+
+                const startGameButton = this.add.text(centerX, buttonStartY, 'Start Game', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+                    .setOrigin(0.5)
                     .setInteractive()
                     .on('pointerdown', () => {
                         this.scene.start('levelsScene');
                     });
 
-                const customizeCharacterButton = this.add.text(600, 300, 'Customize Character', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+                const customizeCharacterButton = this.add.text(centerX, buttonStartY + buttonSpacing, 'Customize Character', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+                    .setOrigin(0.5)
                     .setInteractive()
                     .on('pointerdown', () => {
                         this.scene.start('chooseCharacterScene');
                     });
 
-                const leaderboardButton = this.add.text(600, 400, 'Leaderboard', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+                const leaderboardButton = this.add.text(centerX, buttonStartY + buttonSpacing * 2, 'Leaderboard', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+                    .setOrigin(0.5)
                     .setInteractive();
 
-                const miniGameButton = this.add.text(600, 500, 'Mini Games', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+                const miniGameButton = this.add.text(centerX, buttonStartY + buttonSpacing * 3, 'Mini Games', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+                    .setOrigin(0.5)
                     .setInteractive();
             }
         }
@@ -272,27 +283,32 @@
                 this.load.image('level1Image', 'assets/level1.jpg');
                 this.load.image('level2Image', 'assets/level2.avif');
                 this.load.image('level3Image', 'assets/level3.webp');
-                this.load.image('level4Image', 'assets/level4.png');
+                this.load.image('level4Image', 'assets/level4.jpeg');
             }
 
             create() {
-                this.physics.world.setBounds(0, 0, 2000, 600);
+                const centerX = this.cameras.main.centerX;
+                const centerY = this.cameras.main.centerY;
+                const levelSpacing = 300;
 
                 const levelData = [
-                    { x: 150, y: 300, name: 'Level 1', imageKey: 'level1Image', sceneKey: 'QuizScene', level: 1 },
-                    { x: 500, y: 300, name: 'Level 2', imageKey: 'level2Image', sceneKey: 'QuizScene', level: 2 },
-                    { x: 850, y: 300, name: 'Level 3', imageKey: 'level3Image', sceneKey: 'QuizScene', level: 3 },
-                    { x: 1200, y: 300, name: 'Level 4', imageKey: 'level4Image', sceneKey: 'QuizScene', level: 4 }
+                    { name: 'Level 1', imageKey: 'level1Image', sceneKey: 'QuizScene', level: 1 },
+                    { name: 'Level 2', imageKey: 'level2Image', sceneKey: 'QuizScene', level: 2 },
+                    { name: 'Level 3', imageKey: 'level3Image', sceneKey: 'QuizScene', level: 3 },
+                    { name: 'Level 4', imageKey: 'level4Image', sceneKey: 'QuizScene', level: 4 }
                 ];
 
-                levelData.forEach(level => {
-                    const image = this.add.image(level.x, level.y, level.imageKey);
-                    
+                const startX = centerX - ((levelData.length - 1) * levelSpacing) / 2;
+
+                levelData.forEach((level, index) => {
+                    const x = startX + index * levelSpacing;
+
+                    const image = this.add.image(x, centerY, level.imageKey);
                     image.setInteractive();
                     image.setDisplaySize(230, 230);
                     image.setTint(0xffffff);
 
-                    const text = this.add.text(level.x, level.y, level.name, {
+                    const text = this.add.text(x, centerY + 150, level.name, {
                         fontSize: '20px',
                         fill: '#ffffff',
                         align: 'center'
@@ -313,9 +329,6 @@
                     });
                 });
 
-                this.cursors = this.input.keyboard.createCursorKeys();
-                this.cameras.main.setBounds(0, 0, 2000, 600);
-
                 const backButton = this.add.text(100, 50, 'Back', { 
                     fontSize: '24px', 
                     fill: '#fff', 
@@ -327,153 +340,183 @@
                     this.scene.start('HomeScene');
                 });
             }
-
-            update() {
-                if (this.cursors.left.isDown) {
-                    this.cameras.main.scrollX -= 16;
-                } else if (this.cursors.right.isDown) {
-                    this.cameras.main.scrollX += 16;
-                }
-            }
         }
 
         class QuizScene extends Phaser.Scene {
-            constructor() {
-                super({ key: 'QuizScene' });
+    constructor() {
+        super({ key: 'QuizScene' });
+    }
+
+    init(data) {
+        this.level = data.level; // Set the level from the passed data
+        this.currentQuestionIndex = 0;
+        this.correctAnswers = 0;
+        this.questions = [];
+    }
+
+    preload() {
+        // Dynamically load the background image based on the level
+        const bgImagePath = `assets/level${this.level}_bg.png`;
+        console.log("Loading background:", bgImagePath); // Debugging line
+        this.load.image(`level${this.level}_bg`, bgImagePath);
+    }
+
+    async create() {
+        // Add the background image
+        this.background = this.add.image(
+            this.cameras.main.centerX,
+            this.cameras.main.centerY,
+            `level${this.level}_bg`
+        ).setOrigin(0.5)
+         .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+         .setDepth(-1); // Push the background behind everything
+
+        // Add the quiz title
+        this.add.text(300, 50, `Level ${this.level} Quiz`, { fontSize: "24px", fill: "#fff" });
+
+        try {
+            // Fetch questions from the server
+            const response = await fetch(`http://localhost:3000/questions/${this.level}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
+            this.questions = await response.json();
+            console.log("Questions fetched:", this.questions);
 
-            init(data) {
-                this.level = data.level;
-                this.currentQuestionIndex = 0;
-                this.correctAnswers = 0;
-                this.questions = [];
+            if (this.questions.length > 0) {
+                this.showQuestion();
+            } else {
+                this.add.text(300, 200, "No questions found!", { fontSize: "24px", fill: "#f00" });
             }
-
-            async create() {
-                this.add.text(300, 50, `Level ${this.level} Quiz`, { fontSize: "24px", fill: "#fff" });
-
-                try {
-                    const response = await fetch(`http://localhost:3000/questions/${this.level}`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    this.questions = await response.json();
-                    console.log("Questions fetched:", this.questions);
-
-                    if (this.questions.length > 0) {
-                        this.showQuestion();
-                    } else {
-                        this.add.text(300, 200, "No questions found!", { fontSize: "24px", fill: "#f00" });
-                    }
-                } catch (error) {
-                    console.error("Error fetching questions:", error);
-                    this.add.text(300, 200, "Failed to load questions!", { fontSize: "24px", fill: "#f00" });
-                }
-
-                this.createExitButton();
-            }
-
-            showQuestion() {
-                this.clearScene();
-
-                if (this.currentQuestionIndex >= this.questions.length) {
-                    this.scene.start("QuizCompletedScene", {
-                        score: this.correctAnswers,
-                        total: this.questions.length
-                    });
-                    return;
-                }
-
-                const questionData = this.questions[this.currentQuestionIndex];
-
-                let questionBox = this.add.rectangle(400, 100, 700, 100, 0xFFD700).setOrigin(0.5);
-                
-                this.add.text(150, 70, `QUESTION:\n${questionData.question}`, { 
-                    fontSize: "18px", 
-                    fill: "#000", 
-                    fontStyle: "bold", 
-                    wordWrap: { width: 600 }  
-                });
-
-                this.answerBoxes = [];
-                this.correctAnswerIndex = questionData.options.findIndex(option => option.trim() === questionData.answer.trim());
-
-                questionData.options.forEach((option, index) => {
-                    let yPos = 200 + index * 80;
-                    let optionBox = this.add.rectangle(400, yPos, 600, 60, 0xAABEFF).setOrigin(0.5);
-                    let optionText = this.add.text(250, yPos - 10, `⚫ ${option}`, { 
-                        fontSize: "16px", 
-                        fill: "#000", 
-                        fontStyle: "bold" 
-                    })
-                    .setInteractive()
-                    .on("pointerdown", () => this.checkAnswer(index, optionBox));
-                    
-                    this.answerBoxes.push(optionBox);
-                });
-
-                this.createExitButton();
-                this.createNavigationButtons();
-            }
-
-            checkAnswer(selectedIndex, selectedBox) {
-                if (selectedIndex === this.correctAnswerIndex) {
-                    selectedBox.setFillStyle(0xA0E5A0);
-                    this.correctAnswers++;
-                    setTimeout(() => this.nextQuestion(), 1000);
-                } else {
-                    selectedBox.setFillStyle(0xE5A0A0);
-                    this.answerBoxes[this.correctAnswerIndex].setFillStyle(0xA0E5A0);
-                    this.nextButton.setVisible(true);
-                    this.nextButtonText.setVisible(true);
-                }
-            }
-
-            createNavigationButtons() {
-                if (this.currentQuestionIndex > 0) {
-                    let backButton = this.add.rectangle(200, 500, 120, 50, 0x6A5ACD).setOrigin(0.5);
-                    this.add.text(170, 490, "⬅ Back", { fontSize: "18px", fill: "#fff" })
-                        .setInteractive()
-                        .on("pointerdown", () => {
-                            this.currentQuestionIndex--;
-                            this.showQuestion();
-                        });
-                }
-
-                this.nextButton = this.add.rectangle(600, 500, 120, 50, 0x6A5ACD).setOrigin(0.5);
-                this.nextButtonText = this.add.text(570, 490, "Next ➡", { fontSize: "18px", fill: "#fff" })
-                    .setInteractive()
-                    .on("pointerdown", () => this.nextQuestion());
-
-                this.nextButton.setVisible(false);
-                this.nextButtonText.setVisible(false);
-            }
-
-            nextQuestion() {
-                if (this.currentQuestionIndex < this.questions.length - 1) {
-                    this.currentQuestionIndex++;
-                    this.showQuestion();
-                } else {
-                    this.scene.start("QuizCompletedScene", {
-                        score: this.correctAnswers,
-                        total: this.questions.length
-                    });
-                }
-            }
-
-            clearScene() {
-                this.children.removeAll();
-            }
-
-            createExitButton() {
-                this.add.text(25, 25, "Exit Quiz", { fontSize: "18px", fill: "#fff" })
-                    .setInteractive()
-                    .on("pointerdown", () => {
-                        this.scene.start("levelsScene");
-                    });
-            }
+        } catch (error) {
+            console.error("Error fetching questions:", error);
+            this.add.text(300, 200, "Failed to load questions!", { fontSize: "24px", fill: "#f00" });
         }
 
+        // Add the exit button
+        this.createExitButton();
+    }
+
+    showQuestion() {
+        this.clearScene();
+
+        if (this.currentQuestionIndex >= this.questions.length) {
+            this.scene.start("QuizCompletedScene", {
+                score: this.correctAnswers,
+                total: this.questions.length
+            });
+            return;
+        }
+
+        const questionData = this.questions[this.currentQuestionIndex];
+
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+
+        // Add question box
+        let questionBox = this.add.rectangle(centerX, centerY - 150, 700, 100, 0xFFD700).setOrigin(0.5);
+
+        // Add question text
+        this.add.text(centerX, centerY - 150, `QUESTION:\n${questionData.question}`, { 
+            fontSize: "18px", 
+            fill: "#000", 
+            fontStyle: "bold", 
+            wordWrap: { width: 600 },
+            align: "center" 
+        }).setOrigin(0.5);
+
+        // Add answer options
+        this.answerBoxes = [];
+        this.correctAnswerIndex = questionData.options.findIndex(option => option.trim() === questionData.answer.trim());
+
+        questionData.options.forEach((option, index) => {
+            let yPos = centerY - 50 + index * 80;
+            let optionBox = this.add.rectangle(centerX, yPos, 600, 60, 0xAABEFF).setOrigin(0.5);
+            let optionText = this.add.text(centerX, yPos, `⚫ ${option}`, { 
+                fontSize: "16px", 
+                fill: "#000", 
+                fontStyle: "bold" 
+            })
+            .setOrigin(0.5)
+            .setInteractive()
+            .on("pointerdown", () => this.checkAnswer(index, optionBox));
+            
+            this.answerBoxes.push(optionBox);
+        });
+
+        // Add navigation buttons
+        this.createExitButton();
+        this.createNavigationButtons();
+    }
+
+    checkAnswer(selectedIndex, selectedBox) {
+        if (selectedIndex === this.correctAnswerIndex) {
+            selectedBox.setFillStyle(0xA0E5A0);
+            this.correctAnswers++;
+            setTimeout(() => this.nextQuestion(), 1000);
+        } else {
+            selectedBox.setFillStyle(0xE5A0A0);
+            this.answerBoxes[this.correctAnswerIndex].setFillStyle(0xA0E5A0);
+            this.nextButton.setVisible(true);
+            this.nextButtonText.setVisible(true);
+        }
+    }
+
+    createNavigationButtons() {
+    const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.centerY + 200;
+
+    if (this.currentQuestionIndex > 0) {
+        let backButton = this.add.rectangle(centerX - 150, centerY + 100, 120, 50, 0x6A5ACD).setOrigin(0.5);
+        this.add.text(centerX - 150, centerY + 100, "⬅ Back", { fontSize: "18px", fill: "#fff" })
+            .setOrigin(0.5)
+            .setInteractive()
+            .on("pointerdown", () => {
+                this.currentQuestionIndex--;
+                this.showQuestion();
+            });
+    }
+
+    this.nextButton = this.add.rectangle(centerX + 150, centerY + 100, 120, 50, 0x6A5ACD).setOrigin(0.5);
+    this.nextButtonText = this.add.text(centerX + 150, centerY + 100, "Next ➡", { fontSize: "18px", fill: "#fff" })
+        .setOrigin(0.5)
+        .setInteractive()
+        .on("pointerdown", () => this.nextQuestion());
+
+    this.nextButton.setVisible(false);
+    this.nextButtonText.setVisible(false);
+}
+
+
+    nextQuestion() {
+        if (this.currentQuestionIndex < this.questions.length - 1) {
+            this.currentQuestionIndex++;
+            this.showQuestion();
+        } else {
+            this.scene.start("QuizCompletedScene", {
+                score: this.correctAnswers,
+                total: this.questions.length
+            });
+        }
+    }
+
+    clearScene() {
+        // Destroy all children except the background
+        this.children.list.forEach(child => {
+            if (child !== this.background) {
+                child.destroy();
+            }
+        });
+    }
+
+    createExitButton() {
+        this.add.text(25, 25, "Exit Quiz", { fontSize: "18px", fill: "#fff" })
+            .setInteractive()
+            .on("pointerdown", () => {
+                this.scene.start("levelsScene");
+            });
+    }
+}
         class QuizCompletedScene extends Phaser.Scene {
             constructor() {
                 super({ key: 'QuizCompletedScene' });
@@ -499,8 +542,8 @@
 
         const config = {
             type: Phaser.AUTO,
-            width: 1350,
-            height: 600,
+            width: 1500,
+            height: 700,
             physics: {
                 default: 'arcade',
                 arcade: {
