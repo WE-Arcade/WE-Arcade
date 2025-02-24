@@ -1,5 +1,77 @@
 # Mini Games
 
+## Feb 24, 2025
+
+### Battleships
+- No updates.
+
+### Othello
+- Improve UI and add duckies -> specialists helped with resources 
+- localserver two person room function added
+- Bomber ducky logic to be fixed
+- Rest logic working
+
+Screenshots:
+
+![Othello Home](https://github.com/dhvanithakkar/WE-Arcade/blob/main/MiniGames/othello-feb-home.png)
+
+![Othello Board](https://github.com/dhvanithakkar/WE-Arcade/blob/main/MiniGames/othello-feb-board.png)
+
+### Don't Pop the Duckie
+- Need to add one per day constraints on daily word
+- Music to be added
+- Some fun error messages and final page text to be added
+
+
+Screenshots:
+
+![DPDT Gameplay](https://github.com/dhvanithakkar/WE-Arcade/blob/main/MiniGames/dptd-feb-gameplay.png)
+
+![DPDT Win Page](https://github.com/dhvanithakkar/WE-Arcade/blob/main/MiniGames/dptd-win-page.png)
+
+![DPDT Prizewheel](https://github.com/dhvanithakkar/WE-Arcade/blob/main/MiniGames/dptd-feb-prizewheel.png)
+
+# Feb 18, 2025
+
+### Battleships
+- Screenshots and link to the tutorial of how the game would look. 
+Video: 
+https://drive.google.com/file/d/1Ymmu2-2DjLo1D_7rOLHYaidqU8GffExg/view?usp=sharing
+
+Screenshots:
+
+![Battleships Home](https://github.com/dhvanithakkar/WE-Arcade/blob/main/MiniGames/battleships-home.jpeg)
+
+![Battleships Gameplay](https://github.com/dhvanithakkar/WE-Arcade/blob/main/MiniGames/battleships-gameplay.jpeg)
+
+
+- Working on the CSS with the train theme
+
+### Othello
+- Complimentary colours for UI- colour codes needed
+#### Stuff needed from specialist duckies-
+- Duckies with two different colour hats/ scarf – as pieces- high priority
+- Suggestion for “pond”  board- similar to image below but simpler with less elements
+
+
+# Feb 11, 2025
+### Battleships
+- Trains theme to be added
+- Game logic verification
+
+### Othello
+- Pushing code to the Othello repo within a couple days.
+- Idea on how it should look figured out
+
+### Don't Pop the Duckie
+- Daily-word is done
+- 2 player is done
+- Animation will be assigned to the team today
+
+### ALL: 
+Push the code to the WE-Arcade repo ASAP
+
+
 ## Feb 8, 2025
 ### Battleships
 The basic game is done
@@ -50,3 +122,5 @@ Screenshots:
 - Integration of functions for the Othello (duckling functions)
 - Animations and the quick features. Might need specialist duckie help for Don't Pop the Duckie
 - Change in prize wheel page colours for Don't Pop the Duckie
+
+
