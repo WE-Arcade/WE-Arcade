@@ -52,18 +52,17 @@
         const game = new Phaser.Game(config);
 
         function preload() {
-            // Load background image for the start page
+            
             this.load.image('start_bg', 'assets/start_bg.jpg');
-
-            // Load game assets
             this.load.image('road', 'assets/road.png');
             this.load.image('player', 'assets/character.png');
             this.load.image('biryani', 'assets/biryani.png');
             this.load.image('bay_leaf', 'assets/bay_leaf.png');
-            this.load.image('restartButton', 'assets/restartButton.png');
-            this.load.image('startButton', 'assets/startButton.png');
+            this.load.image('restartButton', 'assets/restartButton.jpg');
+            this.load.image('startButton', 'assets/startButton.jpg');
             this.load.image('coke', 'assets/coke.png');
             this.load.image('kebab', 'assets/kebab.png');
+            this.load.image('Instructions', 'assets/instructions.jpg')
         }
 
         function create() {
@@ -71,19 +70,18 @@
         }
 
         function createStartScreen() {
-            // Add background image for the start page
+            
             this.add.image(config.width / 2, config.height / 2, 'start_bg')
-                .setDisplaySize(config.width, config.height); // Scale to fit the screen
+                .setDisplaySize(config.width, config.height); 
 
-            // Add title text
+            
             const title = this.add.text(config.width / 2, config.height / 3, 'Biryani Run', {
-                fontSize: '64px', fontFamily: 'Arial', color: '#FFD700', stroke: '#000', strokeThickness: 6
+                fontSize: '80px', fontFamily: 'niagara engraved', color: '#bfa100', stroke: '#000', strokeThickness: 6
             }).setOrigin(0.5);
 
-            // Add start button
-            const startButton = this.add.image(config.width / 2, config.height * 0.6, 'startButton')
+            const startButton = this.add.image(config.width / 2, config.height * 0.5, 'startButton')
                 .setOrigin(0.5)
-                .setScale(0.5)
+                .setScale(0.1)
                 .setInteractive()
                 .on('pointerdown', () => {
                     title.destroy();
@@ -91,9 +89,79 @@
                     createGameElements.call(this);
                 });
 
-            // Add hover effect for the start button
-            startButton.on('pointerover', () => startButton.setScale(0.6));
-            startButton.on('pointerout', () => startButton.setScale(0.5));
+            startButton.on('pointerover', () => startButton.setScale(0.15));
+            startButton.on('pointerout', () => startButton.setScale(0.1));
+
+            const instructionsButton = this.add.image(config.width / 2, config.height * 0.6, 'Instructions')
+            .setOrigin(0.5)
+            .setScale(0.1)
+            .setInteractive()
+            .on('pointerdown', () => {
+                title.destroy();
+                startButton.destroy();
+                instructionsButton.destroy();
+                showInstructions.call(this);
+            });
+
+            instructionsButton.on('pointerover', () => instructionsButton.setScale(0.15));
+            instructionsButton.on('pointerout', () => instructionsButton.setScale(0.1));
+
+            
+        }
+
+        function showInstructions() {
+            const instructionText = `
+            - Use UP and DOWN arrow keys to move. 
+            - Collect Biryani for points. 
+            - Avoid Bay Leaves! They reduce lives.
+            - Collect Coke for speed boost.
+            - Collect Kebabs for extra points.
+            - Survive as long as you can!
+            `;
+
+           
+            const boxWidth = 700;
+            const boxHeight = 300;
+            const boxX = config.width / 2 - boxWidth / 2;
+            const boxY = config.height / 2 - boxHeight / 2;
+            const cornerRadius = 20; 
+
+            
+            const bgBox = this.add.graphics();
+            bgBox.fillStyle(0x333333, 0.8); 
+            bgBox.fillRoundedRect(boxX, boxY, boxWidth, boxHeight, cornerRadius);
+            bgBox.lineStyle(4, 0xbfa100); 
+            bgBox.strokeRoundedRect(boxX, boxY, boxWidth, boxHeight, cornerRadius);
+
+
+            const instructionsDisplay = this.add.text(config.width / 2, config.height / 2, instructionText, {
+                fontSize: '24px',
+                fontFamily: 'Algerian',
+                color: '#FFF',
+                align: 'centre',
+                wordWrap: { width: 650 },
+                lineSpacing: 10,
+                
+            }).setOrigin(0.5);
+
+            const closeButton = this.add.text(boxX + boxWidth - 45, boxY + 10, '✖', {
+                fontSize: '28px',
+                fontFamily: 'Arial',
+                color: '#FFF',
+                backgroundColor: '#900',
+                padding: { x: 8, y: 5 },
+                borderRadius : '5px'
+            })
+            .setInteractive()
+            .on('pointerdown', () => {
+                bgBox.destroy();
+                instructionsDisplay.destroy();
+                closeButton.destroy();
+                createStartScreen.call(this);
+            });
+
+            closeButton.on('pointerover', () => closeButton.setStyle({ backgroundColor: '#B00' }));
+            closeButton.on('pointerout', () => closeButton.setStyle({ backgroundColor: '#900' }));
         }
 
         function createGameElements() {
@@ -111,8 +179,8 @@
             this.time.addEvent({ delay: 10000, callback: spawnCoke, callbackScope: this, loop: true });
             this.time.addEvent({ delay: 15000, callback: spawnKebab, callbackScope: this, loop: true });
 
-            scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '32px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
-            livesText = this.add.text(10, 50, 'Lives: 5', { fontSize: '32px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
+            scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '28px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
+            livesText = this.add.text(10, 50, 'Lives: 5', { fontSize: '28px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
 
             this.physics.add.overlap(player, biryanis, collectBiryani, null, this);
             this.physics.add.overlap(player, bay_leafs, hitBayLeaf, null, this);
@@ -149,40 +217,40 @@
         }
 
         function spawnCoke() {
-    // Randomize spawn delay between 5 and 15 seconds
-    const spawnDelay = Phaser.Math.Between(5000, 15000);
-    this.time.delayedCall(spawnDelay, spawnCoke, [], this);
+            // Randomize spawn delay between 5 and 15 seconds
+            const spawnDelay = Phaser.Math.Between(5000, 15000);
+            this.time.delayedCall(spawnDelay, spawnCoke, [], this);
 
-    // Limit the number of active Coke objects
-    if (cokeGroup.getLength() >= 3) return;
+            // Limit the number of active Coke objects
+            if (cokeGroup.getLength() >= 3) return;
 
-    // Spawn Coke at a random position across the top of the screen
-    const xPos = Phaser.Math.Between(100, config.width - 100);
-    const yPos = -50; // Spawn above the screen
-    const speed = Phaser.Math.Between(100, 200); // Randomize speed
+            // Spawn Coke at a random position across the top of the screen
+            const xPos = Phaser.Math.Between(100, config.width - 100);
+            const yPos = -50; // Spawn above the screen
+            const speed = Phaser.Math.Between(100, 200); // Randomize speed
 
-    let coke = cokeGroup.create(xPos, yPos, 'coke')
-        .setScale(0.5)
-        .setVelocityY(speed); // Move downward at a random speed
-}
+            let coke = cokeGroup.create(xPos, yPos, 'coke')
+                .setScale(0.5)
+                .setVelocityY(speed); // Move downward at a random speed
+        }
 
-function spawnKebab() {
-    // Randomize spawn delay between 10 and 20 seconds
-    const spawnDelay = Phaser.Math.Between(10000, 20000);
-    this.time.delayedCall(spawnDelay, spawnKebab, [], this);
+        function spawnKebab() {
+            // Randomize spawn delay between 10 and 20 seconds
+            const spawnDelay = Phaser.Math.Between(10000, 20000);
+            this.time.delayedCall(spawnDelay, spawnKebab, [], this);
 
-    // Limit the number of active Kebab objects
-    if (kebabGroup.getLength() >= 2) return;
+            // Limit the number of active Kebab objects
+            if (kebabGroup.getLength() >= 2) return;
 
-    // Spawn Kebab at a random position across the top of the screen
-    const xPos = Phaser.Math.Between(100, config.width - 100);
-    const yPos = -50; // Spawn above the screen
-    const speed = Phaser.Math.Between(100, 200); // Randomize speed
+            // Spawn Kebab at a random position across the top of the screen
+            const xPos = Phaser.Math.Between(100, config.width - 100);
+            const yPos = -50; // Spawn above the screen
+            const speed = Phaser.Math.Between(100, 200); // Randomize speed
 
-    let kebab = kebabGroup.create(xPos, yPos, 'kebab')
-        .setScale(0.5)
-        .setVelocityY(speed); // Move downward at a random speed
-}
+            let kebab = kebabGroup.create(xPos, yPos, 'kebab')
+                .setScale(0.5)
+                .setVelocityY(speed); // Move downward at a random speed
+        }
 
         function collectBiryani(player, biryani) {
             if (Phaser.Math.Distance.Between(player.x, player.y, biryani.x, biryani.y) < 100) {
@@ -198,7 +266,7 @@ function spawnKebab() {
             const distance = Phaser.Math.Distance.Between(player.x, player.y, bay_leaf.x, bay_leaf.y);
 
             // Only deduct a life if the player is close enough to the bay leaf
-            if (distance < 50) { // Adjust the distance threshold as needed
+            if (distance < 50) { 
                 bay_leaf.destroy();
                 lives--;
                 livesText.setText('Lives: ' + lives);
@@ -232,14 +300,14 @@ function spawnKebab() {
 
             this.add.text(config.width / 2, config.height / 2 - 50, 'Game Over!', {
                 fontSize: '64px',
-                fill: '#ff0000', // Bright red color
+                fill: '#ff0000', 
                 fontFamily: 'Arial Black, Impact, sans-serif',
-                stroke: '#8b0000', // Black outline
+                stroke: '#8b0000', 
                 strokeThickness: 4,
                 shadow: {
                     offsetX: 3,
                     offsetY: 3,
-                    color: '#8b0000', // Dark red shadow
+                    color: '#8b0000', 
                     blur: 0,
                     stroke: true,
                     fill: true
@@ -249,7 +317,7 @@ function spawnKebab() {
             this.add.image(config.width / 2, config.height * 0.7, 'restartButton')
                 .setOrigin(0.5)
                 .setInteractive()
-                .setScale(0.1)
+                .setScale(0.25)
                 .on('pointerdown', () => location.reload());
         }
     </script>
