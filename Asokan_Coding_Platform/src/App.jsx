@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AceEditor from "react-ace";
 import Select from "react-select";
 import axios from "axios";
+import SquidGame from "../../frontend/src/Components/Squid_game/squid_game.jsx";
 
 // Import Ace editor modes
 import "ace-builds/src-noconflict/mode-python";
@@ -32,6 +33,8 @@ function App() {
   const [output, setOutput] = useState("");
   const [question, setQuestion] = useState(null);
   const [theme, setTheme] = useState("monokai");
+  const [showSubmission, setShowSubmission] = useState(false);
+  const [autoStartGame, setAutoStartGame] = useState(false);
 
   useEffect(() => {
     fetchQuestion();
@@ -50,6 +53,8 @@ function App() {
     fetchQuestion();
     setCode(selectedLanguage.template);
     setOutput("");
+    setShowSubmission(false);
+    setAutoStartGame(false);
   };
 
   const handleLanguageChange = (selected) => {
@@ -61,23 +66,25 @@ function App() {
     setOutput("Output will appear here...");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setOutput("Submission result will appear here...");
+    setShowSubmission(true);
+    setAutoStartGame(true);
   };
 
   return (
     <div style={styles.container}>
       {/* Left Panel */}
       <div style={{ ...styles.leftPanel, minHeight: "fit-content" }}>
-        {question ? (
+        {!showSubmission ? (
           <>
             <div style={styles.questionContainer}>
-              <h2>{question.title}</h2>
-              <p>{question.description}</p>
+              <h2>{question?.title}</h2>
+              <p>{question?.description}</p>
             </div>
             <div style={styles.testCasesContainer}>
               <h3>Sample Test Cases:</h3>
-              {question.testCases.slice(0, 2).map((testCase, index) => (
+              {question?.testCases.slice(0, 2).map((testCase, index) => (
                 <div key={index} style={styles.testCase}>
                   <h4>Test Case {index + 1}:</h4>
                   <p>
@@ -89,11 +96,23 @@ function App() {
             </div>
           </>
         ) : (
-          <p>Loading question...</p>
+          <div style={styles.submissionContainer}>
+            <h2>Game Challenge</h2>
+            <SquidGame autoStart={autoStartGame} />
+            <button
+              style={{ ...styles.button, backgroundColor: "#FF9800", marginTop: "20px" }}
+              onClick={() => {
+                setShowSubmission(false);
+                setAutoStartGame(false);
+              }}
+            >
+              Back to Question
+            </button>
+          </div>
         )}
       </div>
 
-      {/* Right Panel */}
+      {/* Right Panel - Now always visible */}
       <div style={styles.rightPanel}>
         <div style={styles.compilerHeader}>
           <Select
@@ -228,6 +247,13 @@ const styles = {
     fontSize: "14px",
     color: "#333",
   },
+  submissionContainer: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    overflow: "hidden",
+  },
 };
 
 const selectStyles = {
@@ -246,3 +272,4 @@ const selectStyles = {
 };
 
 export default App;
+
