@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import GuardImage from "../../Assets/guard_image.png";
 
 function Guard(){
@@ -7,7 +7,7 @@ function Guard(){
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center'}}>
-            <img src={GuardImage} height="50%" style={{display: 'block'}}/>
+            <img src={GuardImage} height="50%" style={{display: 'block'}} alt="Guard"/>
         </div>
     )
 }

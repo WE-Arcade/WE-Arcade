@@ -1,5 +1,5 @@
 import React, { useRef, forwardRef, useImperativeHandle } from "react";
-import Player from "./player.js";
+import Player from "./player.jsx";
 
 const PlayerRow = forwardRef(({ toBeKilledArray }, ref) => {
   const playerRefs = useRef([]);

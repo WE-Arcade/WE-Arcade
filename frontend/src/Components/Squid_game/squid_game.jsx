@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 
-import PlayGroundTopSection from "./playground_top_section.js";
-import PlayerRow from "./player_row.js";
-import BoundaryLine from "./boundary_line.js";
+import PlayGroundTopSection from "./playground_top_section.jsx";
+import PlayerRow from "./player_row.jsx";
+import BoundaryLine from "./boundary_line.jsx";
 
 import dollAudioFile from "../../Assets/squid_game_doll_audio.mp3";
 
@@ -46,7 +46,7 @@ function SquidGame() {
       style={{
         backgroundColor: "#E8D897D1",
         height: "100vh",
-        width: "30%",
+        width: "50%",
         position: "absolute",
         left: 0,
         display: "flex",

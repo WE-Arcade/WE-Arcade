@@ -1,10 +1,10 @@
 // App.js
-import React, { useRef } from "react";
-import SquidGame from "./Components/Squid_game/squid_game.js"; // Adjust path if needed
+import React from "react";
+import SquidGame from "./Components/Squid_game/squid_game";
 
 const App = () => {
   return (
-    <div>
+    <div className="app-container">
       <SquidGame />
     </div>
   );

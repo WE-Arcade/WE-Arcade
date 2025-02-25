@@ -1,7 +1,7 @@
-import React, { Component, useRef } from "react";
+import React from 'react';
 
-import Doll from "./doll.js";
-import Guard from "./guard.js";
+import Doll from "./doll.jsx";
+import Guard from "./guard.jsx";
 
 function PlayGroundTopSection({ dollRef }) {
   return (
