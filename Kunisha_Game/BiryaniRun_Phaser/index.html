@@ -38,6 +38,7 @@
         let velocityMultiplier = 1;
         let gameOver = false;
         let bgMusic, biryaniSound, gameOverSound, bayleafSound;
+        let selectedCharacter = 'player'; // Default character
 
         const config = {
             type: Phaser.AUTO,
@@ -56,6 +57,7 @@
             this.load.image('start_bg', 'assets/start_bg.jpg');
             this.load.image('road', 'assets/road.png');
             this.load.image('player', 'assets/character.png');
+            this.load.image('player2', 'assets/char1.png'); // Add another character
             this.load.image('biryani', 'assets/biryani.png');
             this.load.image('bay_leaf', 'assets/bay_leaf.png');
             this.load.image('restartButton', 'assets/restartButton.jpg');
@@ -64,11 +66,19 @@
             this.load.image('kebab', 'assets/kebab.png');
             this.load.image('Instructions', 'assets/instructions.jpg');
             this.load.image('raita', 'assets/raita.png');
+            this.load.image('selectCharacterButton', 'assets/startButton.png'); // Add a button for character selection
+            this.load.image('background', 'assets/background2.jpg');
+    
+            this.load.image('arrowLeft', 'assets/leftarrowb.png');
+            this.load.image('arrowRight', 'assets/rightarrowb.png');
+            this.load.image('selectButton', 'assets/selectButtonn.png');
 
             this.load.audio('bg_music', 'assets/bg_music.mp3');
             this.load.audio('biryani_hit', 'assets/biryani_hit.mp3');
             this.load.audio('bayleaf_hit', 'assets/bayleaf_hit.mp3');
             this.load.audio('game_over', 'assets/game_over.mp3');
+
+
         }
 
         function create() {
@@ -90,22 +100,40 @@
                 .on('pointerdown', () => {
                     title.destroy();
                     startButton.destroy();
+                    selectCharacterButton.destroy();
+                    instructionsButton.destroy();
                     createGameElements.call(this);
                 });
 
             startButton.on('pointerover', () => startButton.setScale(0.3));
             startButton.on('pointerout', () => startButton.setScale(0.2));
 
-            const instructionsButton = this.add.image(config.width / 2, config.height * 0.6, 'Instructions')
-            .setOrigin(0.5)
-            .setScale(0.2)
-            .setInteractive()
-            .on('pointerdown', () => {
-                title.destroy();
-                startButton.destroy();
-                instructionsButton.destroy();
-                showInstructions.call(this);
-            });
+            const selectCharacterButton = this.add.image(config.width / 2, config.height * 0.6, 'selectCharacterButton')
+                .setOrigin(0.5)
+                .setScale(0.2)
+                .setInteractive()
+                .on('pointerdown', () => {
+                    title.destroy();
+                    startButton.destroy();
+                    selectCharacterButton.destroy();
+                    instructionsButton.destroy();
+                    selectCharacters.call(this);
+                });
+
+            selectCharacterButton.on('pointerover', () => selectCharacterButton.setScale(0.3));
+            selectCharacterButton.on('pointerout', () => selectCharacterButton.setScale(0.2));
+
+            const instructionsButton = this.add.image(config.width / 2, config.height * 0.7, 'Instructions')
+                .setOrigin(0.5)
+                .setScale(0.2)
+                .setInteractive()
+                .on('pointerdown', () => {
+                    title.destroy();
+                    startButton.destroy();
+                    selectCharacterButton.destroy();
+                    instructionsButton.destroy();
+                    showInstructions.call(this);
+                });
 
             instructionsButton.on('pointerover', () => instructionsButton.setScale(0.3));
             instructionsButton.on('pointerout', () => instructionsButton.setScale(0.2));  
@@ -163,9 +191,62 @@
             closeButton.on('pointerout', () => closeButton.setStyle({ backgroundColor: '#900' }));
         }
 
+        function selectCharacters() {
+            this.add.image(0, 0, 'background').setOrigin(0, 0).setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
+            
+            const centerX = this.cameras.main.width / 2;
+            const centerY = this.cameras.main.height / 2;
+        
+            let characterScaleX = 0.25; // Width stays same
+            let characterScaleY = 0.2; // Height reduced
+    
+            let characters = [
+                this.add.image(centerX , centerY, 'player').setScale(characterScaleX, characterScaleY),
+                this.add.image(centerX , centerY, 'player2').setScale(characterScaleX, characterScaleY)
+            ];
+    
+            let arrowLeft = this.add.image(centerX - 300, centerY, 'arrowLeft').setScale(0.5);
+            let arrowRight = this.add.image(centerX + 300, centerY, 'arrowRight').setScale(0.5);
+            let selectButton = this.add.image(centerX, centerY + 150, 'selectButton').setScale(0.7);
+
+    
+            // Ensure arrows and buttons are interactive
+            arrowLeft.setInteractive();
+            arrowRight.setInteractive();
+            selectButton.setInteractive();
+        
+            let currentIndex = 0;
+        
+            arrowLeft.on('pointerdown', () => {
+                characters[currentIndex].setVisible(false);
+                currentIndex = (currentIndex - 1 + characters.length) % characters.length;
+                characters[currentIndex].setVisible(true);
+            });
+        
+            arrowRight.on('pointerdown', () => {
+                characters[currentIndex].setVisible(false);
+                currentIndex = (currentIndex + 1) % characters.length;
+                characters[currentIndex].setVisible(true);
+            });
+        
+            selectButton.on('pointerdown', () => {
+                selectedCharacter = currentIndex === 0 ? 'player' : 'player2';
+                characters.forEach(char => char.destroy());
+                arrowLeft.destroy();
+                arrowRight.destroy();
+                selectButton.destroy();
+                createStartScreen.call(this);
+            });
+        
+            // Initially, only show the first character
+            characters.forEach((char, index) => {
+                if (index !== 0) char.setVisible(false);
+            });
+        }
+
         function createGameElements() {
             this.road = this.add.tileSprite(config.width / 2, config.height / 2, config.width, config.height * 1.5, 'road');
-            player = this.physics.add.sprite(100, config.height / 2, 'player').setCollideWorldBounds(true).setScale(0.3);
+            player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.3);
             cursors = this.input.keyboard.createCursorKeys();
 
             biryanis = this.physics.add.group();
@@ -268,19 +349,19 @@
             }
         }
 
-    function hitBayLeaf(player, bay_leaf) {
-        if (player.immune) return;
+        function hitBayLeaf(player, bay_leaf) {
+            if (player.immune) return;
 
-        const distance = Phaser.Math.Distance.Between(player.x, player.y, bay_leaf.x, bay_leaf.y);
+            const distance = Phaser.Math.Distance.Between(player.x, player.y, bay_leaf.x, bay_leaf.y);
 
-        if (distance < 50) { 
-            bayleafSound.play(); // ✅ Sound only plays when the player is close enough
-            bay_leaf.destroy();
-            lives--;
-            livesText.setText('Lives: ' + lives);
-            if (lives === 0) endGame.call(this);
+            if (distance < 50) { 
+                bayleafSound.play(); // ✅ Sound only plays when the player is close enough
+                bay_leaf.destroy();
+                lives--;
+                livesText.setText('Lives: ' + lives);
+                if (lives === 0) endGame.call(this);
+            }
         }
-    }
 
         function collectCoke(player, coke) {
             coke.destroy();
