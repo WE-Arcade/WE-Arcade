@@ -85,7 +85,7 @@
 
             const startButton = this.add.image(config.width / 2, config.height * 0.5, 'startButton')
                 .setOrigin(0.5)
-                .setScale(0.1)
+                .setScale(0.2)
                 .setInteractive()
                 .on('pointerdown', () => {
                     title.destroy();
@@ -93,12 +93,12 @@
                     createGameElements.call(this);
                 });
 
-            startButton.on('pointerover', () => startButton.setScale(0.15));
-            startButton.on('pointerout', () => startButton.setScale(0.1));
+            startButton.on('pointerover', () => startButton.setScale(0.3));
+            startButton.on('pointerout', () => startButton.setScale(0.2));
 
             const instructionsButton = this.add.image(config.width / 2, config.height * 0.6, 'Instructions')
             .setOrigin(0.5)
-            .setScale(0.1)
+            .setScale(0.2)
             .setInteractive()
             .on('pointerdown', () => {
                 title.destroy();
@@ -107,8 +107,8 @@
                 showInstructions.call(this);
             });
 
-            instructionsButton.on('pointerover', () => instructionsButton.setScale(0.15));
-            instructionsButton.on('pointerout', () => instructionsButton.setScale(0.1));  
+            instructionsButton.on('pointerover', () => instructionsButton.setScale(0.3));
+            instructionsButton.on('pointerout', () => instructionsButton.setScale(0.2));  
         }
 
         function showInstructions() {
@@ -189,11 +189,11 @@
             this.physics.add.overlap(player, kebabGroup, collectKebab, null, this);
             this.physics.add.overlap(player, raitaGroup, collectRaita, null, this);
 
-             bgMusic = this.sound.add('bg_music', { loop: true, volume: 0.5 });
-             bgMusic.play();
-             biryaniSound = this.sound.add('biryani_hit');
-             gameOverSound = this.sound.add('game_over');
-             bayleafSound = this.sound.add('bayleaf_hit');
+            bgMusic = this.sound.add('bg_music', { loop: true, volume: 0.5 });
+            bgMusic.play();
+            biryaniSound = this.sound.add('biryani_hit');
+            gameOverSound = this.sound.add('game_over');
+            bayleafSound = this.sound.add('bayleaf_hit');
         }
 
         function update() {
@@ -226,43 +226,37 @@
         }
 
         function spawnCoke() {
-            // Randomize spawn delay between 5 and 15 seconds
             const spawnDelay = Phaser.Math.Between(5000, 15000);
             this.time.delayedCall(spawnDelay, spawnCoke, [], this);
 
-            // Limit the number of active Coke objects
             if (cokeGroup.getLength() >= 3) return;
 
-            // Spawn Coke at a random position across the top of the screen
             const xPos = Phaser.Math.Between(100, config.width - 100);
-            const yPos = -50; // Spawn above the screen
-            const speed = Phaser.Math.Between(100, 200); // Randomize speed
+            const yPos = -50;
+            const speed = Phaser.Math.Between(100, 200);
 
             let coke = cokeGroup.create(xPos, yPos, 'coke')
                 .setScale(0.5)
-                .setVelocityY(speed); // Move downward at a random speed
+                .setVelocityY(speed);
         }
 
         function spawnKebab() {
-            // Randomize spawn delay between 10 and 20 seconds
             const spawnDelay = Phaser.Math.Between(10000, 20000);
             this.time.delayedCall(spawnDelay, spawnKebab, [], this);
 
-            // Limit the number of active Kebab objects
             if (kebabGroup.getLength() >= 2) return;
 
-            // Spawn Kebab at a random position across the top of the screen
             const xPos = Phaser.Math.Between(100, config.width - 100);
-            const yPos = -50; // Spawn above the screen
-            const speed = Phaser.Math.Between(100, 200); // Randomize speed
+            const yPos = -50;
+            const speed = Phaser.Math.Between(100, 200);
 
             let kebab = kebabGroup.create(xPos, yPos, 'kebab')
                 .setScale(0.5)
-                .setVelocityY(speed); // Move downward at a random speed
+                .setVelocityY(speed);
         }
 
         function spawnRaita() {
-            let raita = raitaGroup.create(Phaser.Math.Between(50, config.width - 50), 0, 'raita').setScale(0.5);
+            let raita = raitaGroup.create(Phaser.Math.Between(50, config.width - 50), 0, 'raita').setScale(0.3);
             raita.setVelocityY(50);
         }
 
@@ -274,20 +268,19 @@
             }
         }
 
-        function hitBayLeaf(player, bay_leaf) {
-            if (player.immune) return;
+    function hitBayLeaf(player, bay_leaf) {
+        if (player.immune) return;
 
-            // Calculate the distance between the player and the bay leaf
-            const distance = Phaser.Math.Distance.Between(player.x, player.y, bay_leaf.x, bay_leaf.y);
-            bayleafSound.play();
-            // Only deduct a life if the player is close enough to the bay leaf
-            if (distance < 50) { 
-                bay_leaf.destroy();
-                lives--;
-                livesText.setText('Lives: ' + lives);
-                if (lives === 0) endGame.call(this);
-            }
+        const distance = Phaser.Math.Distance.Between(player.x, player.y, bay_leaf.x, bay_leaf.y);
+
+        if (distance < 50) { 
+            bayleafSound.play(); // ✅ Sound only plays when the player is close enough
+            bay_leaf.destroy();
+            lives--;
+            livesText.setText('Lives: ' + lives);
+            if (lives === 0) endGame.call(this);
         }
+    }
 
         function collectCoke(player, coke) {
             coke.destroy();
@@ -304,9 +297,9 @@
 
         function collectRaita(player, raita) {
             raita.destroy();
-            playerSpeed = 400;  // ✅ Increase Speed
+            playerSpeed = 400;
             player.setTint(0x00ff00);
-            this.time.delayedCall(5000, () => { playerSpeed = 200; player.clearTint(); });  // ✅ Restore Speed
+            this.time.delayedCall(5000, () => { playerSpeed = 200; player.clearTint(); });
         }
 
         function updateScore(points) {
