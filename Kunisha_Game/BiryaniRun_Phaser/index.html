@@ -57,7 +57,7 @@
             this.load.image('start_bg', 'assets/start_bg.jpg');
             this.load.image('road', 'assets/road.png');
             this.load.image('player', 'assets/character.png');
-            this.load.image('player2', 'assets/char1.png'); // Add another character
+            this.load.image('player2', 'assets/char1.png');
             this.load.image('biryani', 'assets/biryani.png');
             this.load.image('bay_leaf', 'assets/bay_leaf.png');
             this.load.image('restartButton', 'assets/restartButton.jpg');
@@ -66,7 +66,7 @@
             this.load.image('kebab', 'assets/kebab.png');
             this.load.image('Instructions', 'assets/instructions.jpg');
             this.load.image('raita', 'assets/raita.png');
-            this.load.image('selectCharacterButton', 'assets/startButton.png'); // Add a button for character selection
+            this.load.image('selectCharacterButton', 'assets/characterSelection.jpg'); 
             this.load.image('background', 'assets/background2.jpg');
     
             this.load.image('arrowLeft', 'assets/leftarrowb.png');
@@ -197,8 +197,10 @@
             const centerX = this.cameras.main.width / 2;
             const centerY = this.cameras.main.height / 2;
         
-            let characterScaleX = 0.25; // Width stays same
-            let characterScaleY = 0.2; // Height reduced
+            let characterScaleX = 0.25; 
+            let characterScaleY = 0.2; 
+
+            
     
             let characters = [
                 this.add.image(centerX , centerY, 'player').setScale(characterScaleX, characterScaleY),
@@ -209,8 +211,7 @@
             let arrowRight = this.add.image(centerX + 300, centerY, 'arrowRight').setScale(0.5);
             let selectButton = this.add.image(centerX, centerY + 150, 'selectButton').setScale(0.7);
 
-    
-            // Ensure arrows and buttons are interactive
+
             arrowLeft.setInteractive();
             arrowRight.setInteractive();
             selectButton.setInteractive();
@@ -238,7 +239,6 @@
                 createStartScreen.call(this);
             });
         
-            // Initially, only show the first character
             characters.forEach((char, index) => {
                 if (index !== 0) char.setVisible(false);
             });
@@ -246,7 +246,13 @@
 
         function createGameElements() {
             this.road = this.add.tileSprite(config.width / 2, config.height / 2, config.width, config.height * 1.5, 'road');
-            player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.3);
+
+            if (selectedCharacter === 'player') {
+                player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.3);
+            } else if (selectedCharacter === 'player2') {
+                player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.2); // Reduced scale for player2
+            }
+            // player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.3);
             cursors = this.input.keyboard.createCursorKeys();
 
             biryanis = this.physics.add.group();
