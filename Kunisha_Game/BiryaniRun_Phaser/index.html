@@ -12,21 +12,21 @@
             color: #ff0;
             font-weight: bold;
             text-shadow: 2px 2px 4px #000;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
+            background-color: rgba(0, 0, 0, 0.5);
             padding: 5px;
             border-radius: 5px;
         }
         .game-over {
             font-size: 64px;
-            color: #ff0000 !important; /* Bright red */
+            color: #ff0000 !important;
             font-weight: 900;
             font-family: 'Arial Black', Impact, sans-serif;
             text-shadow: 
-                3px 3px 0 #8b0000, /* Dark red shadow for depth */
+                3px 3px 0 #8b0000,
                 -1px -1px 0 #8b0000,
                 1px -1px 0 #8b0000,
                 -1px 1px 0 #8b0000;
-            -webkit-text-stroke: 2px #000; /* Black outline */
+            -webkit-text-stroke: 2px #000;
             letter-spacing: 2px;
         }
     </style>
@@ -38,7 +38,8 @@
         let velocityMultiplier = 1;
         let gameOver = false;
         let bgMusic, biryaniSound, gameOverSound, bayleafSound;
-        let selectedCharacter = 'player'; // Default character
+        let selectedCharacter = 'player';
+        let isPaused = false;
 
         const config = {
             type: Phaser.AUTO,
@@ -68,17 +69,17 @@
             this.load.image('raita', 'assets/raita.png');
             this.load.image('selectCharacterButton', 'assets/characterSelection.jpg'); 
             this.load.image('background', 'assets/background2.jpg');
-    
             this.load.image('arrowLeft', 'assets/leftarrowb.png');
             this.load.image('arrowRight', 'assets/rightarrowb.png');
             this.load.image('selectButton', 'assets/selectButtonn.png');
+            this.load.image('play', 'assets/play.png');
+            this.load.image('pause', 'assets/pause.png');
+            this.load.image('reset', 'assets/reset.png');
 
             this.load.audio('bg_music', 'assets/bg_music.mp3');
             this.load.audio('biryani_hit', 'assets/biryani_hit.mp3');
             this.load.audio('bayleaf_hit', 'assets/bayleaf_hit.mp3');
             this.load.audio('game_over', 'assets/game_over.mp3');
-
-
         }
 
         function create() {
@@ -250,9 +251,9 @@
             if (selectedCharacter === 'player') {
                 player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.3);
             } else if (selectedCharacter === 'player2') {
-                player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.2); // Reduced scale for player2
+                player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.2);
             }
-            // player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.3);
+
             cursors = this.input.keyboard.createCursorKeys();
 
             biryanis = this.physics.add.group();
@@ -270,6 +271,47 @@
             scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '28px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
             livesText = this.add.text(10, 50, 'Lives: 5', { fontSize: '28px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
 
+            // In the createGameElements function, replace the button section with:
+
+// Add control buttons at top-right
+const buttonY = 60;  // Top position
+const buttonScale = 0.35;  // Increased size
+
+// Pause/Play Button
+const pausePlayButton = this.add.image(config.width - 120, buttonY, 'pause')
+    .setOrigin(0.5)
+    .setScale(buttonScale)
+    .setInteractive()
+    .setDepth(1000)
+    .on('pointerdown', () => {
+        isPaused = !isPaused;
+        if (isPaused) {
+            this.physics.pause();
+            this.time.paused = true;
+            bgMusic.pause();
+            pausePlayButton.setTexture('play');
+        } else {
+            this.physics.resume();
+            this.time.paused = false;
+            bgMusic.resume();
+            pausePlayButton.setTexture('pause');
+        }
+    });
+
+// Reset Button
+const resetButton = this.add.image(config.width - 50, buttonY, 'reset')
+    .setOrigin(0.5)
+    .setScale(buttonScale)
+    .setInteractive()
+    .setDepth(1000)
+    .on('pointerdown', () => location.reload());
+
+// Add button backgrounds for better visibility
+const buttonBackground = this.add.graphics();
+buttonBackground.fillStyle(0x000000, 0.5);
+buttonBackground.fillRoundedRect(config.width - 150, buttonY - 35, 130, 70, 10);
+
+
             this.physics.add.overlap(player, biryanis, collectBiryani, null, this);
             this.physics.add.overlap(player, bay_leafs, hitBayLeaf, null, this);
             this.physics.add.overlap(player, cokeGroup, collectCoke, null, this);
@@ -284,7 +326,7 @@
         }
 
         function update() {
-            if (!player || gameOver) return;
+            if (!player || gameOver || isPaused) return;
             this.road.tilePositionX += 4;
 
             if (cursors.up.isDown) player.setVelocityY(-200);
@@ -427,3 +469,6 @@
     </script>
 </body>
 </html>
+
+
+ 
