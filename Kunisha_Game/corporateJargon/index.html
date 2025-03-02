@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corporate Jargon</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+</head>
+<body>
+    <script>
+class HomeScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'HomeScene' });
+    }
+
+    preload() {
+        // Load background image
+        this.load.image('home_bg', './assets/home_bg.jpeg');
+
+        // Load default character images
+        this.load.image('character1_normal', './assets/character1_normal.png');
+        this.load.image('character2_normal', './assets/character2_normal.png');
+        this.load.image('character3_normal', './assets/character3_normal.png');
+
+        // Load other character states if needed
+        this.load.image('character1_happy', './assets/character1_happy.png');
+        this.load.image('character1_sad', './assets/character1_sad.png');
+        this.load.image('character2_happy', './assets/character2_happy.png');
+        this.load.image('character2_sad', './assets/character2_sad.png');
+        this.load.image('character3_happy', './assets/character3_happy.png');
+        this.load.image('character3_sad', './assets/character3_sad.png');
+    }
+
+    create(data) {
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+
+        // Add background image
+        this.add.image(centerX, centerY, 'home_bg')
+            .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+            .setOrigin(0.5);
+
+        // Add title text
+        this.add.text(centerX, 100, 'Welcome to Corporate Jargon!', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
+
+        // Determine selected character and state
+        const characterKey = data && data.characterKey ? data.characterKey : 'character1_normal';
+
+        // Store selected character for other scenes
+        this.registry.set('selectedCharacter', characterKey);
+
+        // Display the selected character on the left side
+        this.selectedCharacterImage = this.add.image(150, centerY, characterKey);
+        this.selectedCharacterImage.setDisplaySize(150, 200);
+
+        const buttonSpacing = 80;
+        const buttonStartY = centerY - buttonSpacing;
+
+        // Start Game button
+        const startGameButton = this.add.text(centerX, buttonStartY, 'Start Game', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+            .setOrigin(0.5)
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.scene.start('levelsScene', { characterKey });
+            });
+
+        // Customize Character button
+        const customizeCharacterButton = this.add.text(centerX, buttonStartY + buttonSpacing, 'Customize Character', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+            .setOrigin(0.5)
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.scene.start('chooseCharacterScene');
+            });
+
+        // Leaderboard button
+        const leaderboardButton = this.add.text(centerX, buttonStartY + buttonSpacing * 2, 'Leaderboard', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+            .setOrigin(0.5)
+            .setInteractive();
+
+        // Mini Games button
+        const miniGameButton = this.add.text(centerX, buttonStartY + buttonSpacing * 3, 'Mini Games', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+            .setOrigin(0.5)
+            .setInteractive();
+    }
+}
+
+
+        class ChooseCharacterScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'chooseCharacterScene' });
+    }
+
+    preload() {
+        // Load character images for Character 1
+        this.load.image('character1_happy', './assets/character1_happy.png');
+        this.load.image('character1_normal', './assets/character1_normal.png');
+        this.load.image('character1_sad', './assets/character1_sad.png');
+
+        // Load character images for Character 2
+        this.load.image('character2_happy', './assets/character2_happy.png');
+        this.load.image('character2_normal', './assets/character2_normal.png');
+        this.load.image('character2_sad', './assets/character2_sad.png');
+
+        // Load character images for Character 3
+        this.load.image('character3_happy', './assets/character3_happy.png');
+        this.load.image('character3_normal', './assets/character3_normal.png');
+        this.load.image('character3_sad', './assets/character3_sad.png');
+
+        // Load arrow images
+        this.load.image('arrowLeft', './assets/arrowLeft.png');
+        this.load.image('arrowRight', './assets/arrowRight.png');
+    }
+
+    create() {
+        this.add.text(100, 100, 'Customise your Character', { fontSize: '32px', fill: '#fff' });
+        this.add.text(100, 50, 'Choose Your Character', { fontSize: '32px', fill: '#FFB6C1' });
+
+        const cardX = 200;
+        const cardY = 350;
+        const cardSpacing = 300;
+        const arrowOffset = 120;
+
+        // Define the character views for each character
+        this.characterViews = {
+            character1: ['character1_happy', 'character1_normal', 'character1_sad'],
+            character2: ['character2_happy', 'character2_normal', 'character2_sad'],
+            character3: ['character3_happy', 'character3_normal', 'character3_sad']
+        };
+
+        // Initialize the current image index for each character
+        this.characterIndex = {
+            character1: 0,
+            character2: 0,
+            character3: 0
+        };
+
+        // Add character images to the scene
+        this.character1 = this.add.image(cardX, cardY, 'character1_normal').setInteractive();
+        this.character2 = this.add.image(cardX + cardSpacing, cardY, 'character2_normal').setInteractive();
+        this.character3 = this.add.image(cardX + 2 * cardSpacing, cardY, 'character3_normal').setInteractive();
+
+        // Set the display size for the character images
+        this.character1.setDisplaySize(200, 300);
+        this.character2.setDisplaySize(200, 300);
+        this.character3.setDisplaySize(200, 300);
+
+        // Add arrows for navigation
+        this.arrowLeft1 = this.add.image(cardX - arrowOffset, cardY, 'arrowLeft').setInteractive();
+        this.arrowRight1 = this.add.image(cardX + arrowOffset, cardY, 'arrowRight').setInteractive();
+        this.arrowLeft2 = this.add.image(cardX + cardSpacing - arrowOffset, cardY, 'arrowLeft').setInteractive();
+        this.arrowRight2 = this.add.image(cardX + cardSpacing + arrowOffset, cardY, 'arrowRight').setInteractive();
+        this.arrowLeft3 = this.add.image(cardX + 2 * cardSpacing - arrowOffset, cardY, 'arrowLeft').setInteractive();
+        this.arrowRight3 = this.add.image(cardX + 2 * cardSpacing + arrowOffset, cardY, 'arrowRight').setInteractive();
+
+        // Add select buttons
+        const selectButton1 = this.add.text(cardX - 50, cardY + 180, 'Select', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.scene.start('characterDisplayScene', { characterKey: 'character1' });
+            });
+
+        const selectButton2 = this.add.text(cardX + cardSpacing - 50, cardY + 180, 'Select', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.scene.start('characterDisplayScene', { characterKey: 'character2' });
+            });
+
+        const selectButton3 = this.add.text(cardX + 2 * cardSpacing - 50, cardY + 180, 'Select', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.scene.start('characterDisplayScene', { characterKey: 'character3' });
+            });
+
+        // Set up arrow functionality
+        this.setupArrowFunctionality();
+    }
+
+    setupArrowFunctionality() {
+        this.arrowLeft1.on('pointerdown', () => this.updateCharacterImage('character1', 'left'));
+        this.arrowRight1.on('pointerdown', () => this.updateCharacterImage('character1', 'right'));
+        this.arrowLeft2.on('pointerdown', () => this.updateCharacterImage('character2', 'left'));
+        this.arrowRight2.on('pointerdown', () => this.updateCharacterImage('character2', 'right'));
+        this.arrowLeft3.on('pointerdown', () => this.updateCharacterImage('character3', 'left'));
+        this.arrowRight3.on('pointerdown', () => this.updateCharacterImage('character3', 'right'));
+    }
+
+    updateCharacterImage(characterKey, direction) {
+        let currentImageIndex = this.characterIndex[characterKey];
+
+        if (direction === 'left') {
+            currentImageIndex = (currentImageIndex - 1 + this.characterViews[characterKey].length) % this.characterViews[characterKey].length;
+        } else {
+            currentImageIndex = (currentImageIndex + 1) % this.characterViews[characterKey].length;
+        }
+
+        this.characterIndex[characterKey] = currentImageIndex;
+        const newImageKey = this.characterViews[characterKey][currentImageIndex];
+
+        if (characterKey === 'character1') {
+            this.character1.setTexture(newImageKey);
+            this.character1.setDisplaySize(200, 300);
+        } else if (characterKey === 'character2') {
+            this.character2.setTexture(newImageKey);
+            this.character2.setDisplaySize(200, 300);
+        } else if (characterKey === 'character3') {
+            this.character3.setTexture(newImageKey);
+            this.character3.setDisplaySize(200, 300);
+        }
+    }
+}
+class CharacterDisplayScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'characterDisplayScene' });
+    }
+
+    preload() {
+        // Load character images for Character 1
+        this.load.image('character1_happy', './assets/character1_happy.png');
+        this.load.image('character1_normal', './assets/character1_normal.png');
+        this.load.image('character1_sad', './assets/character1_sad.png');
+
+        // Load character images for Character 2
+        this.load.image('character2_happy', './assets/character2_happy.png');
+        this.load.image('character2_normal', './assets/character2_normal.png');
+        this.load.image('character2_sad', './assets/character2_sad.png');
+
+        // Load character images for Character 3
+        this.load.image('character3_happy', './assets/character3_happy.png');
+        this.load.image('character3_normal', './assets/character3_normal.png');
+        this.load.image('character3_sad', './assets/character3_sad.png');
+
+        // Load arrow images
+        this.load.image('arrowLeft', './assets/arrowLeft.png');
+        this.load.image('arrowRight', './assets/arrowRight.png');
+    }
+
+    create(data) {
+        const chosenCharacterKey = data.characterKey;
+
+        // Define the character views for the chosen character
+        this.characterViews = {
+            character1: ['character1_happy', 'character1_normal', 'character1_sad'],
+            character2: ['character2_happy', 'character2_normal', 'character2_sad'],
+            character3: ['character3_happy', 'character3_normal', 'character3_sad']
+        };
+
+        // Initialize the current image index for the chosen character
+        this.characterIndex = {
+            [chosenCharacterKey]: 0
+        };
+
+        // Add the chosen character image to the scene
+        this.chosenCharacterImage = this.add.image(400, 300, this.characterViews[chosenCharacterKey][0]);
+        this.chosenCharacterImage.setDisplaySize(200, 300);
+
+        // Add arrows for navigation
+        this.arrowLeft = this.add.image(280, 300, 'arrowLeft').setInteractive();
+        this.arrowRight = this.add.image(520, 300, 'arrowRight').setInteractive();
+
+        // Set up arrow functionality
+        this.setupArrowFunctionality(chosenCharacterKey);
+
+        // Add navigation buttons
+        this.createNavigationButtons(chosenCharacterKey);
+    }
+
+    setupArrowFunctionality(characterKey) {
+        this.arrowLeft.on('pointerdown', () => this.updateCharacterImage(characterKey, 'left'));
+        this.arrowRight.on('pointerdown', () => this.updateCharacterImage(characterKey, 'right'));
+    }
+
+    updateCharacterImage(characterKey, direction) {
+        let currentImageIndex = this.characterIndex[characterKey];
+
+        if (direction === 'left') {
+            currentImageIndex = (currentImageIndex - 1 + this.characterViews[characterKey].length) % this.characterViews[characterKey].length;
+        } else {
+            currentImageIndex = (currentImageIndex + 1) % this.characterViews[characterKey].length;
+        }
+
+        this.characterIndex[characterKey] = currentImageIndex;
+        const newImageKey = this.characterViews[characterKey][currentImageIndex];
+
+        this.chosenCharacterImage.setTexture(newImageKey);
+        this.chosenCharacterImage.setDisplaySize(200, 300);
+    }
+
+    createNavigationButtons(characterKey) {
+        const backButton = this.add.text(100, 50, 'Back', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.scene.start('chooseCharacterScene');
+            });
+
+        const homeButton = this.add.text(200, 50, 'Done', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.scene.start('HomeScene', {
+                    characterKey: this.chosenCharacterImage.texture.key,
+                    characterViewKey: characterKey,
+                    currentImageIndex: this.characterIndex[characterKey],
+                    characterViews: this.characterViews[characterKey]
+                });
+            });
+    }
+}
+        class LevelsScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'levelsScene' });
+            }
+
+            preload() {
+                this.load.image('level1Image', 'assets/level1.jpg');
+                this.load.image('level2Image', 'assets/level2.avif');
+                this.load.image('level3Image', 'assets/level3.webp');
+                this.load.image('level4Image', 'assets/level4.jpeg');
+            }
+
+            create() {
+                const centerX = this.cameras.main.centerX;
+                const centerY = this.cameras.main.centerY;
+                const levelSpacing = 300;
+
+                const levelData = [
+                    { name: 'Level 1', imageKey: 'level1Image', sceneKey: 'QuizScene', level: 1 },
+                    { name: 'Level 2', imageKey: 'level2Image', sceneKey: 'QuizScene', level: 2 },
+                    { name: 'Level 3', imageKey: 'level3Image', sceneKey: 'QuizScene', level: 3 },
+                    { name: 'Level 4', imageKey: 'level4Image', sceneKey: 'QuizScene', level: 4 }
+                ];
+
+                const startX = centerX - ((levelData.length - 1) * levelSpacing) / 2;
+
+                levelData.forEach((level, index) => {
+                    const x = startX + index * levelSpacing;
+
+                    const image = this.add.image(x, centerY, level.imageKey);
+                    image.setInteractive();
+                    image.setDisplaySize(230, 230);
+                    image.setTint(0xffffff);
+
+                    const text = this.add.text(x, centerY + 150, level.name, {
+                        fontSize: '20px',
+                        fill: '#ffffff',
+                        align: 'center'
+                    });
+                    text.setOrigin(0.5);
+
+                    image.on('pointerdown', () => {
+                        console.log('Starting ' + level.name);
+                        this.scene.start(level.sceneKey, { level: level.level });
+                    });
+
+                    image.on('pointerover', () => {
+                        image.setTint(0xff0000);
+                    });
+
+                    image.on('pointerout', () => {
+                        image.setTint(0xffffff);
+                    });
+                });
+
+                const backButton = this.add.text(100, 50, 'Back', { 
+                    fontSize: '24px', 
+                    fill: '#fff', 
+                    backgroundColor: '#4286f4', 
+                    padding: { left: 10, right: 10, top: 5, bottom: 5 } 
+                })
+                .setInteractive()
+                .on('pointerdown', () => {
+                    this.scene.start('HomeScene');
+                });
+            }
+        }
+
+        class QuizScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'QuizScene' });
+    }
+
+    init(data) {
+        this.level = data.level;
+        this.currentQuestionIndex = 0;
+        this.correctAnswers = 0;
+        this.questions = [];
+        this.selectedCharacter = this.registry.get('selectedCharacter') || 'character1_normal';
+        this.answered = false; // Track if the current question has been answered
+    }
+
+    preload() {
+        const bgImagePath = `assets/level${this.level}_bg.png`;
+        console.log("Loading background:", bgImagePath);
+        this.load.image(`level${this.level}_bg`, bgImagePath);
+
+        this.load.image('character1_happy', 'assets/character1_happy.png');
+        this.load.image('character1_sad', 'assets/character1_sad.png');
+        this.load.image('character1_normal', 'assets/character1_normal.png');
+        this.load.image('character2_happy', 'assets/character2_happy.png');
+        this.load.image('character2_sad', 'assets/character2_sad.png');
+        this.load.image('character2_normal', 'assets/character2_normal.png');
+        this.load.image('character3_happy', 'assets/character3_happy.png');
+        this.load.image('character3_sad', 'assets/character3_sad.png');
+        this.load.image('character3_normal', 'assets/character3_normal.png');
+    }
+
+    async create() {
+        this.background = this.add.image(
+            this.cameras.main.centerX,
+            this.cameras.main.centerY,
+            `level${this.level}_bg`
+        ).setOrigin(0.5)
+         .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+         .setDepth(-1);
+
+        this.add.text(300, 50, `Level ${this.level} Quiz`, { fontSize: "24px", fill: "#fff" });
+
+        this.character = this.add.image(150, this.cameras.main.centerY + 200, this.selectedCharacter)
+            .setOrigin(0.5)
+            .setScale(1);
+
+        try {
+            const response = await fetch(`http://localhost:3000/questions/${this.level}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            this.questions = await response.json();
+            console.log("Questions fetched:", this.questions);
+
+            if (this.questions.length > 0) {
+                this.showQuestion();
+            } else {
+                this.add.text(300, 200, "No questions found!", { fontSize: "24px", fill: "#f00" });
+            }
+        } catch (error) {
+            console.error("Error fetching questions:", error);
+            this.add.text(300, 200, "Failed to load questions!", { fontSize: "24px", fill: "#f00" });
+        }
+
+        this.createExitButton();
+    }
+
+    showQuestion = () => {
+    this.clearScene();
+    this.answered = false; // Reset answered state for the new question
+
+    if (this.currentQuestionIndex >= this.questions.length) {
+        this.scene.start("QuizCompletedScene", {
+            score: this.correctAnswers,
+            total: this.questions.length
+        });
+        return;
+    }
+
+    // Reset character to normal expression at the start of each question
+    const baseCharacterName = this.selectedCharacter.split('_')[0];
+    this.character.setTexture(`${baseCharacterName}_normal`);
+
+    const questionData = this.questions[this.currentQuestionIndex];
+
+    const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.centerY;
+
+    let questionBox = this.add.rectangle(centerX, centerY - 150, 700, 100, 0xFFD700).setOrigin(0.5);
+
+    this.add.text(centerX, centerY - 150, `QUESTION:\n${questionData.question}`, { 
+        fontSize: "18px", 
+        fill: "#000", 
+        fontStyle: "bold", 
+        wordWrap: { width: 600 },
+        align: "center" 
+    }).setOrigin(0.5);
+
+    this.answerBoxes = [];
+    this.correctAnswerIndex = questionData.options.findIndex(option => option.trim() === questionData.answer.trim());
+
+    questionData.options.forEach((option, index) => {
+        let yPos = centerY - 50 + index * 80;
+        let optionBox = this.add.rectangle(centerX, yPos, 600, 60, 0xAABEFF).setOrigin(0.5);
+        let optionText = this.add.text(centerX, yPos, `⚫ ${option}`, { 
+            fontSize: "16px", 
+            fill: "#000", 
+            fontStyle: "bold" 
+        })
+        .setOrigin(0.5)
+        .setInteractive()
+        .on("pointerdown", () => {
+            if (!this.answered) { // Prevent re-answering
+                this.checkAnswer(index, optionBox);
+            }
+        });
+
+        this.answerBoxes.push(optionBox);
+    });
+
+    this.createExitButton();
+    this.createNavigationButtons();
+}
+
+    createNavigationButtons = () => {
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY + 200;
+
+        if (this.currentQuestionIndex > 0) {
+            let backButton = this.add.rectangle(centerX - 150, centerY + 100, 120, 50, 0x6A5ACD).setOrigin(0.5);
+            this.add.text(centerX - 150, centerY + 100, "⬅ Back", { fontSize: "18px", fill: "#fff" })
+                .setOrigin(0.5)
+                .setInteractive()
+                .on("pointerdown", () => {
+                    this.currentQuestionIndex--;
+                    this.showQuestion();
+                });
+        }
+
+        this.nextButton = this.add.rectangle(centerX + 150, centerY + 100, 120, 50, 0x6A5ACD).setOrigin(0.5);
+        this.nextButtonText = this.add.text(centerX + 150, centerY + 100, "Next ➡", { fontSize: "18px", fill: "#fff" })
+            .setOrigin(0.5)
+            .setInteractive()
+            .on("pointerdown", () => this.nextQuestion());
+
+        this.nextButton.setVisible(false);
+        this.nextButtonText.setVisible(false);
+    }
+
+    nextQuestion = () => {
+        this.currentQuestionIndex++;
+        this.showQuestion();
+    }
+
+    checkAnswer = (index, optionBox) => {
+    this.answered = true; // Mark the question as answered
+
+    // Extract the base character name (e.g., "character1", "character2", etc.)
+    const baseCharacterName = this.selectedCharacter.split('_')[0];
+
+    if (index === this.correctAnswerIndex) {
+        optionBox.setFillStyle(0x32CD32);
+        this.correctAnswers++;
+        this.character.setTexture(`${baseCharacterName}_happy`); // Change to happy expression
+        this.time.delayedCall(1000, () => this.nextQuestion()); // Automatically go to the next question after 1 second
+    } else {
+        optionBox.setFillStyle(0xFF6347);
+        this.character.setTexture(`${baseCharacterName}_sad`); // Change to sad expression
+        this.nextButton.setVisible(true);
+        this.nextButtonText.setVisible(true);
+    }
+
+    // Disable further interaction with answer options
+    this.answerBoxes.forEach(box => box.disableInteractive());
+}
+
+    clearScene() {
+        this.children.list.forEach(child => {
+            if (child !== this.background && child !== this.character) {
+                child.destroy();
+            }
+        });
+    }
+
+    createExitButton() {
+        this.add.text(25, 25, "Exit Quiz", { fontSize: "18px", fill: "#fff" })
+            .setInteractive()
+            .on("pointerdown", () => {
+                this.scene.start("levelsScene");
+            });
+    }
+}
+
+        class QuizCompletedScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'QuizCompletedScene' });
+            }
+
+            init(data) {
+                this.score = data.score || 0;
+                this.total = data.total || 0;
+            }
+
+            create() {
+                this.add.text(400, 100, "QUIZ COMPLETED!", { fontSize: "40px", fill: "#ffffff" }).setOrigin(0.5);
+                this.add.text(400, 200, `Your Score: ${this.score} / ${this.total}`, { fontSize: "28px", fill: "#00ff00" }).setOrigin(0.5);
+
+                let exitButton = this.add.rectangle(400, 400, 200, 60, 0xFF4500).setOrigin(0.5).setInteractive();
+                let exitText = this.add.text(exitButton.x - 80, exitButton.y - 10, "Exit to Menu", { fontSize: "20px", fill: "#ffffff" });
+                
+                exitButton.on("pointerdown", () => {
+                    this.scene.start("levelsScene");
+                });
+            }
+        }
+
+        const config = {
+            type: Phaser.AUTO,
+            width: 1500,
+            height: 700,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 300 },
+                    debug: false
+                }
+            },
+            scene: [HomeScene, ChooseCharacterScene, CharacterDisplayScene, LevelsScene, QuizScene, QuizCompletedScene]
+        };
+
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>

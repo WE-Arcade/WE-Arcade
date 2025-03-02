@@ -87,3 +87,26 @@ With the SRS in place, we are well-positioned to begin the implementation phase 
 ### **3. Conclusion**
 
 We have successfully completed the next phase of the project, with squid game animation as well as coding editor UI ready. We are now planning the next phase of the project, that is integration of various frontend components and backend development.
+
+
+## **Week-Three**
+
+### **1. Completed Tasks**
+
+1)  **Backend**:
+    
+    -   API for fetching questions from MongoDB and for checking user's code against test cases.
+
+----------
+
+### **2. Next Steps**
+
+1)  **Integration of new assets in squid game animation**
+2)  **Integration of mock APIs for squid game**
+3)  **Integrating frontend components**
+
+----------
+
+### **3. Conclusion**
+
+We have successfully completed the next phase of the project, with the complete backend ready. We are now planning the next phase of the project, that is integration of various frontend components and API integration.

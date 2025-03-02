@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biryani Run</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    <style>
+        body { margin: 0; font-family: 'Arial', sans-serif; }
+        .scoreboard {
+            font-size: 32px;
+            color: #ff0;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .game-over {
+            font-size: 64px;
+            color: #ff0000 !important; /* Bright red */
+            font-weight: 900;
+            font-family: 'Arial Black', Impact, sans-serif;
+            text-shadow: 
+                3px 3px 0 #8b0000, /* Dark red shadow for depth */
+                -1px -1px 0 #8b0000,
+                1px -1px 0 #8b0000,
+                -1px 1px 0 #8b0000;
+            -webkit-text-stroke: 2px #000; /* Black outline */
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let player, cursors, biryanis, bay_leafs, cokeGroup, kebabGroup, raitaGroup, score = 0, scoreText, lives = 5, livesText;
+        let baseVelocity = -200;
+        let velocityMultiplier = 1;
+        let gameOver = false;
+        let bgMusic, biryaniSound, gameOverSound, bayleafSound;
+        let selectedCharacter = 'player'; // Default character
+
+        const config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            physics: {
+                default: 'arcade',
+                arcade: { gravity: { y: 0 }, debug: false }
+            },
+            scene: { preload, create, update }
+        };
+
+        const game = new Phaser.Game(config);
+
+        function preload() {
+            this.load.image('start_bg', 'assets/start_bg.jpg');
+            this.load.image('road', 'assets/road.png');
+            this.load.image('player', 'assets/character.png');
+            this.load.image('player2', 'assets/char1.png');
+            this.load.image('biryani', 'assets/biryani.png');
+            this.load.image('bay_leaf', 'assets/bay_leaf.png');
+            this.load.image('restartButton', 'assets/restartButton.jpg');
+            this.load.image('startButton', 'assets/startButton.jpg');
+            this.load.image('coke', 'assets/coke.png');
+            this.load.image('kebab', 'assets/kebab.png');
+            this.load.image('Instructions', 'assets/instructions.jpg');
+            this.load.image('raita', 'assets/raita.png');
+            this.load.image('selectCharacterButton', 'assets/characterSelection.jpg'); 
+            this.load.image('background', 'assets/background2.jpg');
+    
+            this.load.image('arrowLeft', 'assets/leftarrowb.png');
+            this.load.image('arrowRight', 'assets/rightarrowb.png');
+            this.load.image('selectButton', 'assets/selectButtonn.png');
+
+            this.load.audio('bg_music', 'assets/bg_music.mp3');
+            this.load.audio('biryani_hit', 'assets/biryani_hit.mp3');
+            this.load.audio('bayleaf_hit', 'assets/bayleaf_hit.mp3');
+            this.load.audio('game_over', 'assets/game_over.mp3');
+
+
+        }
+
+        function create() {
+            createStartScreen.call(this);
+        }
+
+        function createStartScreen() {
+            this.add.image(config.width / 2, config.height / 2, 'start_bg')
+                .setDisplaySize(config.width, config.height); 
+
+            const title = this.add.text(config.width / 2, config.height / 3, 'Biryani Run', {
+                fontSize: '80px', fontFamily: 'niagara engraved', color: '#bfa100', stroke: '#000', strokeThickness: 6
+            }).setOrigin(0.5);
+
+            const startButton = this.add.image(config.width / 2, config.height * 0.5, 'startButton')
+                .setOrigin(0.5)
+                .setScale(0.2)
+                .setInteractive()
+                .on('pointerdown', () => {
+                    title.destroy();
+                    startButton.destroy();
+                    selectCharacterButton.destroy();
+                    instructionsButton.destroy();
+                    createGameElements.call(this);
+                });
+
+            startButton.on('pointerover', () => startButton.setScale(0.3));
+            startButton.on('pointerout', () => startButton.setScale(0.2));
+
+            const selectCharacterButton = this.add.image(config.width / 2, config.height * 0.6, 'selectCharacterButton')
+                .setOrigin(0.5)
+                .setScale(0.2)
+                .setInteractive()
+                .on('pointerdown', () => {
+                    title.destroy();
+                    startButton.destroy();
+                    selectCharacterButton.destroy();
+                    instructionsButton.destroy();
+                    selectCharacters.call(this);
+                });
+
+            selectCharacterButton.on('pointerover', () => selectCharacterButton.setScale(0.3));
+            selectCharacterButton.on('pointerout', () => selectCharacterButton.setScale(0.2));
+
+            const instructionsButton = this.add.image(config.width / 2, config.height * 0.7, 'Instructions')
+                .setOrigin(0.5)
+                .setScale(0.2)
+                .setInteractive()
+                .on('pointerdown', () => {
+                    title.destroy();
+                    startButton.destroy();
+                    selectCharacterButton.destroy();
+                    instructionsButton.destroy();
+                    showInstructions.call(this);
+                });
+
+            instructionsButton.on('pointerover', () => instructionsButton.setScale(0.3));
+            instructionsButton.on('pointerout', () => instructionsButton.setScale(0.2));  
+        }
+
+        function showInstructions() {
+            const instructionText = `
+            - Use UP and DOWN arrow keys to move. 
+            - Collect Biryani for points. 
+            - Avoid Bay Leaves! They reduce lives.
+            - Collect Raita for speed boost.
+            - Collect Kebabs for extra points.
+            - Collect Coke for immunity.
+            - Survive as long as you can!
+            `;
+
+            const boxWidth = 700;
+            const boxHeight = 300;
+            const boxX = config.width / 2 - boxWidth / 2;
+            const boxY = config.height / 2 - boxHeight / 2;
+            const cornerRadius = 20; 
+
+            const bgBox = this.add.graphics();
+            bgBox.fillStyle(0x333333, 0.8); 
+            bgBox.fillRoundedRect(boxX, boxY, boxWidth, boxHeight, cornerRadius);
+            bgBox.lineStyle(4, 0xbfa100); 
+            bgBox.strokeRoundedRect(boxX, boxY, boxWidth, boxHeight, cornerRadius);
+
+            const instructionsDisplay = this.add.text(config.width / 2, config.height / 2, instructionText, {
+                fontSize: '24px',
+                fontFamily: 'Algerian',
+                color: '#FFF',
+                align: 'centre',
+                wordWrap: { width: 650 },
+                lineSpacing: 10,
+            }).setOrigin(0.5);
+
+            const closeButton = this.add.text(boxX + boxWidth - 45, boxY + 10, '✖', {
+                fontSize: '28px',
+                fontFamily: 'Arial',
+                color: '#FFF',
+                backgroundColor: '#900',
+                padding: { x: 8, y: 5 },
+                borderRadius : '5px'
+            })
+            .setInteractive()
+            .on('pointerdown', () => {
+                bgBox.destroy();
+                instructionsDisplay.destroy();
+                closeButton.destroy();
+                createStartScreen.call(this);
+            });
+
+            closeButton.on('pointerover', () => closeButton.setStyle({ backgroundColor: '#B00' }));
+            closeButton.on('pointerout', () => closeButton.setStyle({ backgroundColor: '#900' }));
+        }
+
+        function selectCharacters() {
+            this.add.image(0, 0, 'background').setOrigin(0, 0).setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
+            
+            const centerX = this.cameras.main.width / 2;
+            const centerY = this.cameras.main.height / 2;
+        
+            let characterScaleX = 0.25; 
+            let characterScaleY = 0.2; 
+
+            
+    
+            let characters = [
+                this.add.image(centerX , centerY, 'player').setScale(characterScaleX, characterScaleY),
+                this.add.image(centerX , centerY, 'player2').setScale(characterScaleX, characterScaleY)
+            ];
+    
+            let arrowLeft = this.add.image(centerX - 300, centerY, 'arrowLeft').setScale(0.5);
+            let arrowRight = this.add.image(centerX + 300, centerY, 'arrowRight').setScale(0.5);
+            let selectButton = this.add.image(centerX, centerY + 150, 'selectButton').setScale(0.7);
+
+
+            arrowLeft.setInteractive();
+            arrowRight.setInteractive();
+            selectButton.setInteractive();
+        
+            let currentIndex = 0;
+        
+            arrowLeft.on('pointerdown', () => {
+                characters[currentIndex].setVisible(false);
+                currentIndex = (currentIndex - 1 + characters.length) % characters.length;
+                characters[currentIndex].setVisible(true);
+            });
+        
+            arrowRight.on('pointerdown', () => {
+                characters[currentIndex].setVisible(false);
+                currentIndex = (currentIndex + 1) % characters.length;
+                characters[currentIndex].setVisible(true);
+            });
+        
+            selectButton.on('pointerdown', () => {
+                selectedCharacter = currentIndex === 0 ? 'player' : 'player2';
+                characters.forEach(char => char.destroy());
+                arrowLeft.destroy();
+                arrowRight.destroy();
+                selectButton.destroy();
+                createStartScreen.call(this);
+            });
+        
+            characters.forEach((char, index) => {
+                if (index !== 0) char.setVisible(false);
+            });
+        }
+
+        function createGameElements() {
+            this.road = this.add.tileSprite(config.width / 2, config.height / 2, config.width, config.height * 1.5, 'road');
+
+            if (selectedCharacter === 'player') {
+                player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.3);
+            } else if (selectedCharacter === 'player2') {
+                player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.2); // Reduced scale for player2
+            }
+            // player = this.physics.add.sprite(100, config.height / 2, selectedCharacter).setCollideWorldBounds(true).setScale(0.3);
+            cursors = this.input.keyboard.createCursorKeys();
+
+            biryanis = this.physics.add.group();
+            bay_leafs = this.physics.add.group();
+            cokeGroup = this.physics.add.group();
+            kebabGroup = this.physics.add.group();
+            raitaGroup = this.physics.add.group();
+
+            this.time.addEvent({ delay: 1000, callback: spawnBiryani, callbackScope: this, loop: true });
+            this.time.addEvent({ delay: 1500, callback: spawnBayLeaf, callbackScope: this, loop: true });
+            this.time.addEvent({ delay: 10000, callback: spawnCoke, callbackScope: this, loop: true });
+            this.time.addEvent({ delay: 15000, callback: spawnKebab, callbackScope: this, loop: true });
+            this.time.addEvent({ delay: 20000, callback: spawnRaita, callbackScope: this, loop: true });
+
+            scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '28px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
+            livesText = this.add.text(10, 50, 'Lives: 5', { fontSize: '28px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
+
+            this.physics.add.overlap(player, biryanis, collectBiryani, null, this);
+            this.physics.add.overlap(player, bay_leafs, hitBayLeaf, null, this);
+            this.physics.add.overlap(player, cokeGroup, collectCoke, null, this);
+            this.physics.add.overlap(player, kebabGroup, collectKebab, null, this);
+            this.physics.add.overlap(player, raitaGroup, collectRaita, null, this);
+
+            bgMusic = this.sound.add('bg_music', { loop: true, volume: 0.5 });
+            bgMusic.play();
+            biryaniSound = this.sound.add('biryani_hit');
+            gameOverSound = this.sound.add('game_over');
+            bayleafSound = this.sound.add('bayleaf_hit');
+        }
+
+        function update() {
+            if (!player || gameOver) return;
+            this.road.tilePositionX += 4;
+
+            if (cursors.up.isDown) player.setVelocityY(-200);
+            else if (cursors.down.isDown) player.setVelocityY(200);
+            else player.setVelocityY(0);
+
+            cleanUpObjects(biryanis);
+            cleanUpObjects(bay_leafs);
+            cleanUpObjects(raitaGroup);
+        }
+
+        function cleanUpObjects(group) {
+            group.getChildren().forEach(obj => { if (obj.x < -50) obj.destroy(); });
+        }
+
+        function spawnBiryani() {
+            let biryani = biryanis.create(config.width, Phaser.Math.Between(50, config.height - 50), 'biryani')
+                .setVelocityX(baseVelocity * velocityMultiplier)
+                .setScale(0.3);
+        }
+
+        function spawnBayLeaf() {
+            let bay_leaf = bay_leafs.create(config.width, Phaser.Math.Between(50, config.height - 50), 'bay_leaf')
+                .setVelocityX(baseVelocity * velocityMultiplier)
+                .setScale(0.3);
+        }
+
+        function spawnCoke() {
+            const spawnDelay = Phaser.Math.Between(5000, 15000);
+            this.time.delayedCall(spawnDelay, spawnCoke, [], this);
+
+            if (cokeGroup.getLength() >= 3) return;
+
+            const xPos = Phaser.Math.Between(100, config.width - 100);
+            const yPos = -50;
+            const speed = Phaser.Math.Between(100, 200);
+
+            let coke = cokeGroup.create(xPos, yPos, 'coke')
+                .setScale(0.5)
+                .setVelocityY(speed);
+        }
+
+        function spawnKebab() {
+            const spawnDelay = Phaser.Math.Between(10000, 20000);
+            this.time.delayedCall(spawnDelay, spawnKebab, [], this);
+
+            if (kebabGroup.getLength() >= 2) return;
+
+            const xPos = Phaser.Math.Between(100, config.width - 100);
+            const yPos = -50;
+            const speed = Phaser.Math.Between(100, 200);
+
+            let kebab = kebabGroup.create(xPos, yPos, 'kebab')
+                .setScale(0.5)
+                .setVelocityY(speed);
+        }
+
+        function spawnRaita() {
+            let raita = raitaGroup.create(Phaser.Math.Between(50, config.width - 50), 0, 'raita').setScale(0.3);
+            raita.setVelocityY(50);
+        }
+
+        function collectBiryani(player, biryani) {
+            if (Phaser.Math.Distance.Between(player.x, player.y, biryani.x, biryani.y) < 100) {
+                biryani.destroy();
+                updateScore(10);
+                biryaniSound.play();
+            }
+        }
+
+        function hitBayLeaf(player, bay_leaf) {
+            if (player.immune) return;
+
+            const distance = Phaser.Math.Distance.Between(player.x, player.y, bay_leaf.x, bay_leaf.y);
+
+            if (distance < 50) { 
+                bayleafSound.play(); // ✅ Sound only plays when the player is close enough
+                bay_leaf.destroy();
+                lives--;
+                livesText.setText('Lives: ' + lives);
+                if (lives === 0) endGame.call(this);
+            }
+        }
+
+        function collectCoke(player, coke) {
+            coke.destroy();
+            player.immune = true;
+            player.setTint(0x0000ff);
+            this.time.delayedCall(5000, () => { player.immune = false; player.clearTint(); });
+        }
+
+        function collectKebab(player, kebab) {
+            kebab.destroy();
+            player.scoreMultiplier = 2;
+            this.time.delayedCall(10000, () => player.scoreMultiplier = 1);
+        }
+
+        function collectRaita(player, raita) {
+            raita.destroy();
+            playerSpeed = 400;
+            player.setTint(0x00ff00);
+            this.time.delayedCall(5000, () => { playerSpeed = 200; player.clearTint(); });
+        }
+
+        function updateScore(points) {
+            score += points * (player.scoreMultiplier || 1);
+            scoreText.setText('Score: ' + score);
+            velocityMultiplier = 1 + (score * 0.01);
+        }
+
+        function endGame() {
+            gameOver = true;
+            this.physics.pause();
+            this.time.removeAllEvents();
+            bgMusic.stop();
+            gameOverSound.play();
+
+            this.add.text(config.width / 2, config.height / 2 - 50, 'Game Over!', {
+                fontSize: '64px',
+                fill: '#ff0000', 
+                fontFamily: 'Arial Black, Impact, sans-serif',
+                stroke: '#8b0000', 
+                strokeThickness: 4,
+                shadow: {
+                    offsetX: 3,
+                    offsetY: 3,
+                    color: '#8b0000', 
+                    blur: 0,
+                    stroke: true,
+                    fill: true
+                }
+            }).setOrigin(0.5);
+
+            this.add.image(config.width / 2, config.height * 0.7, 'restartButton')
+                .setOrigin(0.5)
+                .setInteractive()
+                .setScale(0.25)
+                .on('pointerdown', () => location.reload());
+        }   
+    </script>
+</body>
+</html>
