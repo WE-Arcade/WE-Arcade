@@ -201,8 +201,6 @@
             let characterScaleX = 0.25; 
             let characterScaleY = 0.2; 
 
-            
-    
             let characters = [
                 this.add.image(centerX , centerY, 'player').setScale(characterScaleX, characterScaleY),
                 this.add.image(centerX , centerY, 'player2').setScale(characterScaleX, characterScaleY)
@@ -211,7 +209,6 @@
             let arrowLeft = this.add.image(centerX - 300, centerY, 'arrowLeft').setScale(0.5);
             let arrowRight = this.add.image(centerX + 300, centerY, 'arrowRight').setScale(0.5);
             let selectButton = this.add.image(centerX, centerY + 150, 'selectButton').setScale(0.7);
-
 
             arrowLeft.setInteractive();
             arrowRight.setInteractive();
@@ -271,46 +268,43 @@
             scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '28px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
             livesText = this.add.text(10, 50, 'Lives: 5', { fontSize: '28px', fill: '#ff0', fontWeight: 'bold', backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: { x: 10, y: 5 }, borderRadius: 5 });
 
-            // In the createGameElements function, replace the button section with:
+            // Add control buttons at top-right
+            const buttonY = 60;  // Top position
+            const buttonScale = 0.35;  // Increased size
 
-// Add control buttons at top-right
-const buttonY = 60;  // Top position
-const buttonScale = 0.35;  // Increased size
+            // Pause/Play Button
+            const pausePlayButton = this.add.image(config.width - 120, buttonY, 'pause')
+                .setOrigin(0.5)
+                .setScale(buttonScale)
+                .setInteractive()
+                .setDepth(1000)
+                .on('pointerdown', () => {
+                    isPaused = !isPaused;
+                    if (isPaused) {
+                        this.physics.pause();
+                        this.time.paused = true;
+                        bgMusic.pause();
+                        pausePlayButton.setTexture('play');
+                    } else {
+                        this.physics.resume();
+                        this.time.paused = false;
+                        bgMusic.resume();
+                        pausePlayButton.setTexture('pause');
+                    }
+                });
 
-// Pause/Play Button
-const pausePlayButton = this.add.image(config.width - 120, buttonY, 'pause')
-    .setOrigin(0.5)
-    .setScale(buttonScale)
-    .setInteractive()
-    .setDepth(1000)
-    .on('pointerdown', () => {
-        isPaused = !isPaused;
-        if (isPaused) {
-            this.physics.pause();
-            this.time.paused = true;
-            bgMusic.pause();
-            pausePlayButton.setTexture('play');
-        } else {
-            this.physics.resume();
-            this.time.paused = false;
-            bgMusic.resume();
-            pausePlayButton.setTexture('pause');
-        }
-    });
+            // Reset Button
+            const resetButton = this.add.image(config.width - 50, buttonY, 'reset')
+                .setOrigin(0.5)
+                .setScale(buttonScale)
+                .setInteractive()
+                .setDepth(1000)
+                .on('pointerdown', () => location.reload());
 
-// Reset Button
-const resetButton = this.add.image(config.width - 50, buttonY, 'reset')
-    .setOrigin(0.5)
-    .setScale(buttonScale)
-    .setInteractive()
-    .setDepth(1000)
-    .on('pointerdown', () => location.reload());
-
-// Add button backgrounds for better visibility
-const buttonBackground = this.add.graphics();
-buttonBackground.fillStyle(0x000000, 0.5);
-buttonBackground.fillRoundedRect(config.width - 150, buttonY - 35, 130, 70, 10);
-
+            // Add button backgrounds for better visibility
+            const buttonBackground = this.add.graphics();
+            buttonBackground.fillStyle(0x000000, 0.5);
+            buttonBackground.fillRoundedRect(config.width - 150, buttonY - 35, 130, 70, 10);
 
             this.physics.add.overlap(player, biryanis, collectBiryani, null, this);
             this.physics.add.overlap(player, bay_leafs, hitBayLeaf, null, this);
@@ -469,6 +463,3 @@ buttonBackground.fillRoundedRect(config.width - 150, buttonY - 35, 130, 70, 10);
     </script>
 </body>
 </html>
-
-
- 
