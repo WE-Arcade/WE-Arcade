@@ -418,7 +418,10 @@ class CharacterDisplayScene extends Phaser.Scene {
             .setScale(1);
 
         try {
-            const response = await fetch(`http://localhost:3000/questions/${this.level}`);
+            // Make sure this URL matches your deployed Render URL
+            const apiBaseUrl = 'https://corporate-jargon.onrender.com'; // Update this with your actual Render URL
+            const response = await fetch(`${apiBaseUrl}/questions/${this.level}`);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -438,64 +441,64 @@ class CharacterDisplayScene extends Phaser.Scene {
         this.createExitButton();
     }
 
-    showQuestion = () => {
-    this.clearScene();
-    this.answered = false; // Reset answered state for the new question
+    showQuestion() {
+        this.clearScene();
+        this.answered = false; // Reset answered state for the new question
 
-    if (this.currentQuestionIndex >= this.questions.length) {
-        this.scene.start("QuizCompletedScene", {
-            score: this.correctAnswers,
-            total: this.questions.length
+        if (this.currentQuestionIndex >= this.questions.length) {
+            this.scene.start("QuizCompletedScene", {
+                score: this.correctAnswers,
+                total: this.questions.length
+            });
+            return;
+        }
+
+        // Reset character to normal expression at the start of each question
+        const baseCharacterName = this.selectedCharacter.split('_')[0];
+        this.character.setTexture(`${baseCharacterName}_normal`);
+
+        const questionData = this.questions[this.currentQuestionIndex];
+
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+
+        let questionBox = this.add.rectangle(centerX, centerY - 150, 700, 100, 0xFFD700).setOrigin(0.5);
+
+        this.add.text(centerX, centerY - 150, `QUESTION:\n${questionData.question}`, { 
+            fontSize: "18px", 
+            fill: "#000", 
+            fontStyle: "bold", 
+            wordWrap: { width: 600 },
+            align: "center" 
+        }).setOrigin(0.5);
+
+        this.answerBoxes = [];
+        this.correctAnswerIndex = questionData.options.findIndex(option => option.trim() === questionData.answer.trim());
+
+        questionData.options.forEach((option, index) => {
+            let yPos = centerY - 50 + index * 80;
+            let optionBox = this.add.rectangle(centerX, yPos, 600, 60, 0xAABEFF).setOrigin(0.5);
+            let optionText = this.add.text(centerX, yPos, `⚫ ${option}`, { 
+                fontSize: "16px", 
+                fill: "#000", 
+                fontStyle: "bold" 
+            })
+            .setOrigin(0.5)
+            .setInteractive()
+            .on("pointerdown", () => {
+                if (!this.answered) { // Prevent re-answering
+                    this.checkAnswer(index, optionBox);
+                }
+            });
+
+            this.answerBoxes.push(optionBox);
         });
-        return;
+
+        this.createExitButton();
+        this.createNavigationButtons();
     }
 
-    // Reset character to normal expression at the start of each question
-    const baseCharacterName = this.selectedCharacter.split('_')[0];
-    this.character.setTexture(`${baseCharacterName}_normal`);
-
-    const questionData = this.questions[this.currentQuestionIndex];
-
-    const centerX = this.cameras.main.centerX;
-    const centerY = this.cameras.main.centerY;
-
-    let questionBox = this.add.rectangle(centerX, centerY - 150, 700, 100, 0xFFD700).setOrigin(0.5);
-
-    this.add.text(centerX, centerY - 150, `QUESTION:\n${questionData.question}`, { 
-        fontSize: "18px", 
-        fill: "#000", 
-        fontStyle: "bold", 
-        wordWrap: { width: 600 },
-        align: "center" 
-    }).setOrigin(0.5);
-
-    this.answerBoxes = [];
-    this.correctAnswerIndex = questionData.options.findIndex(option => option.trim() === questionData.answer.trim());
-
-    questionData.options.forEach((option, index) => {
-        let yPos = centerY - 50 + index * 80;
-        let optionBox = this.add.rectangle(centerX, yPos, 600, 60, 0xAABEFF).setOrigin(0.5);
-        let optionText = this.add.text(centerX, yPos, `⚫ ${option}`, { 
-            fontSize: "16px", 
-            fill: "#000", 
-            fontStyle: "bold" 
-        })
-        .setOrigin(0.5)
-        .setInteractive()
-        .on("pointerdown", () => {
-            if (!this.answered) { // Prevent re-answering
-                this.checkAnswer(index, optionBox);
-            }
-        });
-
-        this.answerBoxes.push(optionBox);
-    });
-
-    this.createExitButton();
-    this.createNavigationButtons();
-}
-
-    createNavigationButtons = () => {
+    createNavigationButtons() {
         const centerX = this.cameras.main.centerX;
         const centerY = this.cameras.main.centerY + 200;
 
@@ -520,32 +523,32 @@ class CharacterDisplayScene extends Phaser.Scene {
         this.nextButtonText.setVisible(false);
     }
 
-    nextQuestion = () => {
+    nextQuestion() {
         this.currentQuestionIndex++;
         this.showQuestion();
     }
 
-    checkAnswer = (index, optionBox) => {
-    this.answered = true; // Mark the question as answered
+    checkAnswer(index, optionBox) {
+        this.answered = true; // Mark the question as answered
 
-    // Extract the base character name (e.g., "character1", "character2", etc.)
-    const baseCharacterName = this.selectedCharacter.split('_')[0];
+        // Extract the base character name (e.g., "character1", "character2", etc.)
+        const baseCharacterName = this.selectedCharacter.split('_')[0];
 
-    if (index === this.correctAnswerIndex) {
-        optionBox.setFillStyle(0x32CD32);
-        this.correctAnswers++;
-        this.character.setTexture(`${baseCharacterName}_happy`); // Change to happy expression
-        this.time.delayedCall(1000, () => this.nextQuestion()); // Automatically go to the next question after 1 second
-    } else {
-        optionBox.setFillStyle(0xFF6347);
-        this.character.setTexture(`${baseCharacterName}_sad`); // Change to sad expression
-        this.nextButton.setVisible(true);
-        this.nextButtonText.setVisible(true);
+        if (index === this.correctAnswerIndex) {
+            optionBox.setFillStyle(0x32CD32);
+            this.correctAnswers++;
+            this.character.setTexture(`${baseCharacterName}_happy`); // Change to happy expression
+            this.time.delayedCall(1000, () => this.nextQuestion()); // Automatically go to the next question after 1 second
+        } else {
+            optionBox.setFillStyle(0xFF6347);
+            this.character.setTexture(`${baseCharacterName}_sad`); // Change to sad expression
+            this.nextButton.setVisible(true);
+            this.nextButtonText.setVisible(true);
+        }
+
+        // Disable further interaction with answer options
+        this.answerBoxes.forEach(box => box.disableInteractive());
     }
-
-    // Disable further interaction with answer options
-    this.answerBoxes.forEach(box => box.disableInteractive());
-}
 
     clearScene() {
         this.children.list.forEach(child => {
@@ -563,29 +566,40 @@ class CharacterDisplayScene extends Phaser.Scene {
             });
     }
 }
+class QuizCompletedScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'QuizCompletedScene' });
+    }
 
-        class QuizCompletedScene extends Phaser.Scene {
-            constructor() {
-                super({ key: 'QuizCompletedScene' });
-            }
+    init(data) {
+        this.score = data.score || 0;
+        this.total = data.total || 0;
+    }
 
-            init(data) {
-                this.score = data.score || 0;
-                this.total = data.total || 0;
-            }
+    preload() {
+        this.load.image('background', 'assets/home_bg.jpeg');
+    }
 
-            create() {
-                this.add.text(400, 100, "QUIZ COMPLETED!", { fontSize: "40px", fill: "#ffffff" }).setOrigin(0.5);
-                this.add.text(400, 200, `Your Score: ${this.score} / ${this.total}`, { fontSize: "28px", fill: "#00ff00" }).setOrigin(0.5);
+    create() {
+        // Add background image and scale it to cover the entire screen
+        const bg = this.add.image(0, 0, 'background').setOrigin(0, 0);
+        bg.setDisplaySize(this.scale.width, this.scale.height);
 
-                let exitButton = this.add.rectangle(400, 400, 200, 60, 0xFF4500).setOrigin(0.5).setInteractive();
-                let exitText = this.add.text(exitButton.x - 80, exitButton.y - 10, "Exit to Menu", { fontSize: "20px", fill: "#ffffff" });
-                
-                exitButton.on("pointerdown", () => {
-                    this.scene.start("levelsScene");
-                });
-            }
-        }
+        // Centered text
+        this.add.text(this.scale.width / 2, this.scale.height / 4, "QUIZ COMPLETED!", { fontSize: "48px", fill: "#ffffff" }).setOrigin(0.5);
+        this.add.text(this.scale.width / 2, this.scale.height / 3, `Your Score: ${this.score} / ${this.total}`, { fontSize: "32px", fill: "#00ff00" }).setOrigin(0.5);
+
+        // Exit button and text, centered
+        let exitButton = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 200, 60, 0xFF4500).setOrigin(0.5).setInteractive();
+        this.add.text(this.scale.width / 2, this.scale.height / 2, "Exit to Menu", { fontSize: "24px", fill: "#ffffff" }).setOrigin(0.5);
+
+        exitButton.on("pointerdown", () => {
+            this.scene.start("levelsScene");
+        });
+    }
+}
+
+
 
         const config = {
             type: Phaser.AUTO,
