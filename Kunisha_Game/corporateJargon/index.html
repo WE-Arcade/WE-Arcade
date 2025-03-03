@@ -41,7 +41,7 @@ class HomeScene extends Phaser.Scene {
             .setOrigin(0.5);
 
         // Add title text
-        this.add.text(centerX, 100, 'Welcome to Corporate Jargon!', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
+        this.add.text(centerX, 100, 'Welcome to Corporate Jargon!', { fontSize: '32px', fill: '#fff', fontStyle: 'bold' }).setOrigin(0.5);
 
         // Determine selected character and state
         const characterKey = data && data.characterKey ? data.characterKey : 'character1_normal';
@@ -73,14 +73,14 @@ class HomeScene extends Phaser.Scene {
             });
 
         // Leaderboard button
-        const leaderboardButton = this.add.text(centerX, buttonStartY + buttonSpacing * 2, 'Leaderboard', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-            .setOrigin(0.5)
-            .setInteractive();
+        // const leaderboardButton = this.add.text(centerX, buttonStartY + buttonSpacing * 2, 'Leaderboard', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+        //     .setOrigin(0.5)
+        //     .setInteractive();
 
         // Mini Games button
-        const miniGameButton = this.add.text(centerX, buttonStartY + buttonSpacing * 3, 'Mini Games', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-            .setOrigin(0.5)
-            .setInteractive();
+        // const miniGameButton = this.add.text(centerX, buttonStartY + buttonSpacing * 3, 'Mini Games', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
+        //     .setOrigin(0.5)
+        //     .setInteractive();
     }
 }
 
