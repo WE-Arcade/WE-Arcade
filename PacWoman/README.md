@@ -37,6 +37,10 @@ Each ghost has a special effect when it catches you:
 - **Frontend**: JavaScript, HTML5 Canvas, CSS   
 - **Game Engine**: Custom-built in JavaScript  
 
+## 💻 How to run the game?
+- Clone the repository
+- Run index.html on your browser
+
 ## 🎮 Play Now!  
 🔗 **[PacWoman - Play Here](https://pac-woman.vercel.app/)**  
 
