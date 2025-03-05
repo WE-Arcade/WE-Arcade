@@ -44,7 +44,7 @@ const LevelCompletePage = () => {
           <span style={styles.trophy}>🏆</span> You have successfully moved to the next level! <span style={styles.trophy}>🏆</span>
         </p>
         <button onClick={handleProceed} style={styles.proceedButton}>
-          <span style={styles.buttonText}>🎯 Proceed</span>
+          <span style={styles.buttonText}>Proceed</span>
         </button>
       </div>
     </div>
@@ -90,12 +90,13 @@ const styles = {
     fontSize: "32px",
     margin: 0,
     fontWeight: "bold",
-    fontFamily: "'Times New Roman', serif",
+    fontFamily: "'Pirata One', cursive",
   },
   message: {
     color: "rgb(255, 215, 0)",
     fontSize: "18px",
     margin: "20px 0 30px 0",
+    fontFamily: "'MedievalSharp', cursive",
   },
   trophy: {
     fontSize: "18px",

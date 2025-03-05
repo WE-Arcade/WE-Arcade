@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { GameContext } from "../context/GameContext";
 
 const RiddlePage = () => {
-  const { powerUps, setPowerUps } = useContext(GameContext);
+  const { powerUps, setPowerUps, unlockedLevels } = useContext(GameContext);
   const { level } = useParams();
   const navigate = useNavigate();
   const [userAnswer, setUserAnswer] = useState("");
@@ -36,7 +36,7 @@ const RiddlePage = () => {
     3: {
       question:
         "Whose presence in life can guide you, inspire you, and create wonders?",
-      answers: ["mentor"],
+      answers: ["mentor", "mentors"],
       clues: [
         "This person shares wisdom and helps you grow.",
         "Sphoorthy emphasizes the importance of this person in life, showing how they shape our journey.",
@@ -63,7 +63,7 @@ const RiddlePage = () => {
     6: {
       question:
         "It's a flavorful and aromatic dish often made with rice, spices, and meat or vegetables.",
-      answers: ["biryani"],
+      answers: ["biryani", "briyani", "biriyani"],
       clues: [
         "A well-known Hyderabadi dish, often enjoyed with raita or mirchi ka salan.",
         "Kunisha's favorite dish.",
@@ -81,7 +81,7 @@ const RiddlePage = () => {
     8: {
       question:
         "What simple habit can save you from unnecessary doubts and mistakes in class?",
-      answers: ["read the screen"],
+      answers: ["read the screen", "read screen"],
       clues: [
         "Asokan and Aruvi always remind you to do this when you see a big red ERROR on your monitor!",
         "I show you words, I show you clues—everything you need is right in view! Just read the ______.",
@@ -90,7 +90,7 @@ const RiddlePage = () => {
     9: {
       question:
         "I stand at the helm, guiding through night, a vision ahead, I ignite the light. Who am I?",
-      answers: ["leader"],
+      answers: ["leader", "lead"],
       clues: [
         "People often look to me for guidance, direction, and support, especially in times of uncertainty.",
         "I am skilled at making decisions, motivating teams, and setting a clear path.",
@@ -107,7 +107,7 @@ const RiddlePage = () => {
     },
     11: {
       question: "What must you accept to achieve greatness?",
-      answers: ["failure"],
+      answers: ["failure", "loss"],
       clues: [
         "I start with 'F' and often feel like a setback.",
         "But, without me, success wouldn’t be possible.",
@@ -143,7 +143,7 @@ const RiddlePage = () => {
     15: {
       question:
         "What principle encourages you to leverage existing solutions rather than start from scratch?",
-      answers: ["don't reinvent the wheel"],
+      answers: ["don't reinvent the wheel", "dont reinvent the wheel", "don't reinvent wheel", "dont reinvent wheel"],
       clues: [
         "This concept emphasizes efficiency and reusability, often applied in software development to save time and effort.",
         "Aruvi often mentions it in web development classes to remind us to use what's already available.",
@@ -170,7 +170,7 @@ const RiddlePage = () => {
     18: {
       question:
         "Who is the first woman to earn a Ph.D. in computer science in the United States and is known for her groundbreaking work in artificial intelligence?",
-      answers: ["grace hopper"],
+      answers: ["grace hopper", "Grace Hopper", "Grace hopper"],
       clues: [
         "She is a pioneer in AI and her work has influenced modern computing.",
         "There is a major tech conference dedicated to women in computing, named after her, called the ___ ______ Conference.",
@@ -199,6 +199,13 @@ const RiddlePage = () => {
   const riddle = riddles[level];
 
   useEffect(() => {
+    // Check if the level is unlocked
+    if (!unlockedLevels.includes(parseInt(level))) {
+      alert("You haven't unlocked this level yet!");
+      navigate("/levels-page"); // Redirect to levels page
+      return;
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const powerUpEarned = urlParams.get("powerUpEarned");
     const returnToLevel = urlParams.get("returnTo") || level;
@@ -219,11 +226,15 @@ const RiddlePage = () => {
     }
 
     window.history.replaceState({}, document.title, window.location.pathname);
-  }, [level, navigate, powerUps]);
+  }, [level, navigate, unlockedLevels]);
 
   const checkAnswer = () => {
     if (riddle.answers.includes(userAnswer.toLowerCase())) {
-      navigate(`/level-complete/${level}`);
+      if (parseInt(level) === 20) {
+        navigate("/final-level-complete");
+      } else {
+        navigate(`/level-complete/${level}`);
+      }
     } else {
       alert("Wrong answer! Try again.");
     }
@@ -260,6 +271,7 @@ const RiddlePage = () => {
 
   return (
     <div style={styles.container}>
+      <div style={styles.overlay}>
       <div style={styles.riddleCard}>
         <h1 style={styles.title}>Level - {level}</h1>
         <p style={styles.question}>{riddle.question}</p>
@@ -379,19 +391,34 @@ const RiddlePage = () => {
           </div>
         )}
       </div>
+      </div>
     </div>
   );
 };
 
 const styles = {
   container: {
+    position: "relative",
     minHeight: "100vh",
     backgroundColor: "#003F66",
     backgroundImage: "url('/images/wallpaper1.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     padding: "20px",
+    overflow: "hidden",
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(101, 67, 33, 0.7)", // Translucent brown
+      zIndex: 1, // Ensure it's above the background image but below the content
+    },
   },
   riddleCard: {
     backgroundColor: "#1C1C1C", // Black
@@ -400,6 +427,11 @@ const styles = {
     maxWidth: "600px",
     width: "100%",
     border: "2px solid #FFC72C", // Yellow
+    position: "relative", // Ensure it's above the overlay
+    zIndex: 2, // Ensure it's above the overlay
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center", // Center-align content horizontally
   },
   title: {
     color: "#FFC72C", // Yellow
@@ -413,16 +445,18 @@ const styles = {
     marginBottom: "30px",
     lineHeight: "1.6",
     textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive", // MedievalSharp font
   },
   input: {
-    width: "100%",
-    padding: "12px",
+    width: "100%", // Full width to match submit button
+    padding: "10px 1px",
     fontSize: "1rem",
     backgroundColor: "transparent",
     border: "2px solid #FFC72C", // Yellow
     borderRadius: "5px",
     color: "#FFC72C", // Yellow
     marginBottom: "20px",
+    textAlign: "center", // Center-align text
   },
   submitButton: {
     backgroundColor: "#FFC72C", // Yellow
@@ -433,13 +467,15 @@ const styles = {
     fontSize: "1.1rem",
     cursor: "pointer",
     marginBottom: "20px",
-    width: "100%",
+    width: "100%", // Full width to match input box
+    textAlign: "center", // Center-align text
   },
   buttonContainer: {
     display: "flex",
     justifyContent: "center",
     gap: "20px",
     marginBottom: "20px",
+    width: "100%", // Ensure the container takes full width
   },
   clueButton: {
     backgroundColor: "#004F6D", // Teal Blue
@@ -448,7 +484,8 @@ const styles = {
     border: "none",
     borderRadius: "5px",
     cursor: "pointer",
-    flex: 1,
+    flex: 1, // Equal width for both buttons
+    width: "100%", // Full width within the container
   },
   powerupButton: {
     backgroundColor: "#001EFF", // Royal Blue
@@ -457,7 +494,8 @@ const styles = {
     border: "none",
     borderRadius: "5px",
     cursor: "pointer",
-    flex: 1,
+    flex: 1, // Equal width for both buttons
+    width: "100%", // Full width within the container
   },
   backButton: {
     backgroundColor: "#8B0000", // Dark Red
@@ -466,20 +504,21 @@ const styles = {
     border: "none",
     borderRadius: "5px",
     cursor: "pointer",
-    width: "100%",
+    width: "100%", // Full width to match combined width of clue and powerup buttons
   },
   clueText: {
     color: "#FFC72C", // Yellow
     marginBottom: "10px",
     textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive", // MedievalSharp font
   },
   overlay: {
     position: "fixed",
     top: 0,
     left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(139, 69, 19, 0.5)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -501,6 +540,7 @@ const styles = {
   clueContent: {
     color: "#FFC72C", // Yellow
     marginBottom: "20px",
+    fontFamily: "'MedievalSharp', cursive",
   },
   closeButton: {
     backgroundColor: "#8B0000", // Dark Red
@@ -515,7 +555,6 @@ const styles = {
     justifyContent: "center",
     gap: "10px",
   },
-  // New styles for power-up notification
   notificationOverlay: {
     position: "fixed",
     top: 20,
@@ -541,6 +580,7 @@ const styles = {
     color: "#FFC72C", // Yellow
     fontSize: "1rem",
     lineHeight: "1.4",
+    fontFamily: "'MedievalSharp', cursive",
   },
 };
 

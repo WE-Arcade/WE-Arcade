@@ -12,6 +12,7 @@ import Bitwisegame from "./components/minigames/Bitwisegame";
 import LoopRunner from "./components/minigames/LoopRunner";
 import SQLgame from "./components/minigames/SQLgame"
 import CryptogramGame from "./components/minigames/Cryptogram";
+import FinalLevelCompletePage from "./components/FinalLevelCompletePage";
 
 
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/mini-game/sql-query" element={<SQLgame />} />
           <Route path="/mini-game/crypto" element={<CryptogramGame/>} />
           <Route path="/" element={<LoginPage />} />
+          <Route path="/final-level-complete" element={<FinalLevelCompletePage />} />
         </Routes>
       </BrowserRouter>
     </GameProvider>

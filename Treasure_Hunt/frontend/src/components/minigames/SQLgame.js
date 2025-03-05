@@ -5,88 +5,98 @@ import { GameContext } from "../../context/GameContext";
 const questions = [
   {
     story:
-      "FROM users SELECT name, email WHERE active = 1;\n ",
+    "FROM users SELECT name, email WHERE active = 1;\n ",
     question: "Players must fix the query to retrieve the correct user data.",
     answer: "SELECT name, email FROM users WHERE active = 1;",
-  },
+    options: [
+    "SELECT name, email FROM users WHERE active = 1;",
+    "SELECT * FROM users WHERE active = 1;",
+    "SELECT name, email FROM users;",
+    "SELECT name, email WHERE active = 1;",
+    ],
+    },
+    {
+      story: "A database administrator needs to uniquely identify each record in a table to ensure data integrity.",
+      question: "What is the primary key?",
+      answer: "Unique identifier",
+      options: [
+        "Unique identifier",
+        "Foreign key",
+        "Data type",
+        "Index"
+      ],
+    },
+    {
+      story: "A data analyst is retrieving records from a large database and needs to filter results based on a specific condition.",
+      question: "Which SQL clause is used to filter results?",
+      answer: "WHERE",
+      options: [
+        "WHERE",
+        "ORDER BY",
+        "GROUP BY",
+        "HAVING"
+      ],
+    },
 ];
 
-const SQLgame = () => {
-  const { powerUps, setPowerUps, answeredQuestions, setAnsweredQuestions } = useContext(GameContext);
+const SQLGame = () => {
+  const { powerUps, setPowerUps, answeredQuestions, setAnsweredQuestions } =
+    useContext(GameContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const [userAnswer, setUserAnswer] = useState("");
+  const [selectedOption, setSelectedOption] = useState("");
   const [feedback, setFeedback] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-  
+
   // Choose a question that hasn't been answered yet
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(null);
-  
+
   useEffect(() => {
-    // Get return level from query params if available
     const params = new URLSearchParams(location.search);
     const returnToLevel = params.get("returnTo") || "1";
-    
-    // Ensure answeredQuestions is an array
-    const safeAnsweredQuestions = Array.isArray(answeredQuestions) ? answeredQuestions : [];
-    
-    // Filter out questions that have already been answered
-    const availableQuestions = questions.filter((_, index) => 
-      !safeAnsweredQuestions.includes(index)
+
+    const safeAnsweredQuestions = Array.isArray(answeredQuestions)
+      ? answeredQuestions
+      : [];
+
+    const availableQuestions = questions.filter(
+      (_, index) => !safeAnsweredQuestions.includes(index)
     );
-    
+
     if (availableQuestions.length === 0) {
-      // If all questions have been answered, reset the answered questions
       if (setAnsweredQuestions) {
         setAnsweredQuestions([]);
       }
       setCurrentQuestionIndex(Math.floor(Math.random() * questions.length));
     } else {
-      // Choose a random question from the available ones
       const randomIndex = Math.floor(Math.random() * availableQuestions.length);
       const originalIndex = questions.indexOf(availableQuestions[randomIndex]);
       setCurrentQuestionIndex(originalIndex);
     }
   }, [answeredQuestions, setAnsweredQuestions, location.search]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (currentQuestionIndex === null) return;
-    
-    if (
-      userAnswer.trim().toLowerCase() ===
-      questions[currentQuestionIndex].answer.toLowerCase()
-    ) {
-      // Ensure answeredQuestions is an array before updating
-      const safeAnsweredQuestions = Array.isArray(answeredQuestions) ? answeredQuestions : [];
-      
-      // Add the current question to answered questions
-      if (setAnsweredQuestions) {
-        setAnsweredQuestions([...safeAnsweredQuestions, currentQuestionIndex]);
-      }
-      
-      // Increment powerups
-      const newPowerUps = (powerUps || 0) + 1;
-      if (setPowerUps) {
-        setPowerUps(newPowerUps);
-      }
-      
+  const handleSubmit = () => {
+    if (selectedOption === null) return;
+    if (selectedOption === questions[currentQuestionIndex].answer) {
+      if (setAnsweredQuestions)
+        setAnsweredQuestions([...answeredQuestions, currentQuestionIndex]);
+      if (setPowerUps) setPowerUps((prevPowerUps) => prevPowerUps + 1); // Increment power-up count
+  
       setFeedback("Correct! You earned a power-up!");
       setShowSuccess(true);
-      
-      // Get return level from URL params
+  
+      // Get the correct return level
       const params = new URLSearchParams(location.search);
       const returnToLevel = params.get("returnTo") || "1";
-      
+  
       setTimeout(() => {
-        // Navigate back to the specific riddle level
-        navigate(`/riddle/${returnToLevel}`);
+        navigate(`/riddle/${returnToLevel}?powerUpEarned=true`); // Ensure correct return level
       }, 2000);
     } else {
       setFeedback("Incorrect. Try again!");
     }
   };
+  
 
   const handleBack = () => {
     const params = new URLSearchParams(location.search);
@@ -100,43 +110,70 @@ const SQLgame = () => {
   }
 
   return (
-    <div className="sql-game-container" style={styles.container}>
+    <div className="dsa-game-container" style={styles.container}>
       <div className="game-box" style={styles.gameBox}>
-        <h2 style={styles.title}>SQL Challenge</h2>
+        <h2 style={styles.title}>Data Structure Challenge</h2>
         <p style={styles.story}>{questions[currentQuestionIndex].story}</p>
         <strong style={styles.question}>
           Question: {questions[currentQuestionIndex].question}
         </strong>
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <input
-            type="text"
-            placeholder="Enter your answer here..."
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            required
-            style={styles.input}
-          />
-          <div style={styles.buttonContainer}>
-            <button type="submit" style={styles.submitButton}>
-              Submit
-            </button>
-            <button type="button" onClick={handleBack} style={styles.backButton}>
-              Back
-            </button>
-          </div>
-        </form>
+
+        {/* Options */}
+        {questions[currentQuestionIndex].options.map((option, index) => (
+          <button
+            key={index}
+            style={{
+              backgroundColor:
+                selectedOption === option ? "#FFD700" : "transparent",
+              color: selectedOption === option ? "black" : "#FFD700",
+              width: "100%",
+              padding: "12px",
+              margin: "5px 0",
+              fontSize: "1rem",
+              border: "2px solid #FFD700",
+              borderRadius: "5px",
+              cursor: "pointer",
+              textAlign: "center",
+              fontWeight: "bold",
+              transition: "background-color 0.3s, color 0.3s",
+            }}
+            onMouseEnter={(e) => {
+              if (selectedOption !== option) {
+                e.target.style.backgroundColor = "#FFD700";
+                e.target.style.color = "black";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (selectedOption !== option) {
+                e.target.style.backgroundColor = "transparent";
+                e.target.style.color = "#FFD700";
+              }
+            }}
+            onClick={() => setSelectedOption(option)}
+          >
+            {option}
+          </button>
+        ))}
+
+        <div style={styles.buttonContainer}>
+          <button type="submit" onClick={handleSubmit} style={styles.submitButton}>
+            Submit
+          </button>
+          <button type="button" onClick={handleBack} style={styles.backButton}>
+            Back
+          </button>
+        </div>
+
         {feedback && <p style={styles.feedback}>{feedback}</p>}
       </div>
-      
+
       {/* Success popup */}
       {showSuccess && (
         <div style={styles.overlay}>
           <div style={styles.popup}>
             <h3 style={styles.popupTitle}>Success!</h3>
             <p style={styles.popupContent}>
-              You've earned a power-up!
-              <br />
-              Redirecting to the riddle page...
+              You've earned a power-up! Redirecting...
             </p>
           </div>
         </div>
@@ -152,53 +189,97 @@ const styles = {
     backgroundColor: "#003F66",
     display: "flex",
     justifyContent: "center",
-    
     alignItems: "center",
     padding: "20px",
   },
   gameBox: {
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
     padding: "40px",
     borderRadius: "15px",
     maxWidth: "600px",
     width: "100%",
     border: "2px solid #FFD700",
   },
-  title: {
+  header: {
     color: "#FFD700",
     fontSize: "2rem",
-    marginBottom: "20px",
     textAlign: "center",
-  },
-  story: {
-    color: "#FFD700",
-    fontSize: "1.1rem",
     marginBottom: "20px",
-    lineHeight: "1.6",
+  },
+  title: {
+    color: "#FFD700",
+    fontSize: "1.8rem",
+    marginBottom: "10px",
+    textAlign: "center",
   },
   question: {
     color: "#FFD700",
     fontSize: "1.2rem",
     marginBottom: "20px",
-    display: "block",
+    textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive",
   },
-  form: {
-    marginTop: "20px",
+  codeBox: {
+    backgroundColor: "#333",
+    padding: "15px",
+    borderRadius: "8px",
+    marginBottom: "20px",
+    overflowX: "auto",
   },
-  input: {
+  code: {
+    color: "#FFD700",
+    fontFamily: "monospace",
+    fontSize: "1rem",
+    whiteSpace: "pre-wrap",
+    margin: 0,
+  },
+  hintContainer: {
+    marginBottom: "20px",
+    textAlign: "center",
+  },
+  hintButton: {
+    backgroundColor: "#8B0000",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    padding: "8px 16px",
+    cursor: "pointer",
+    marginBottom: "10px",
+  },
+  hintText: {
+    color: "#FFD700",
+    fontSize: "1.1rem",
+    marginTop: "10px",
+  },
+  optionButton: {
     width: "100%",
     padding: "12px",
+    margin: "5px 0",
     fontSize: "1rem",
     backgroundColor: "transparent",
     border: "2px solid #FFD700",
     borderRadius: "5px",
+    cursor: "pointer",
+    textAlign: "center",
     color: "#FFD700",
-    marginBottom: "20px",
+    fontWeight: "bold",
+    transition: "background-color 0.3s, color 0.3s",
+  },
+
+  optionButtonHover: {
+    backgroundColor: "#FFD700",
+    color: "black", // Ensure text remains visible
+  },
+
+  optionButtonSelected: {
+    backgroundColor: "#FFD700",
+    color: "black", // Ensure text remains visible
   },
   buttonContainer: {
     display: "flex",
     justifyContent: "space-between",
     gap: "15px",
+    marginTop: "20px",
   },
   submitButton: {
     backgroundColor: "#FFD700",
@@ -255,6 +336,13 @@ const styles = {
     marginBottom: "20px",
     lineHeight: "1.6",
   },
+  story: {
+    color: "#FFD700",
+    fontSize: "1.1rem",
+    marginBottom: "20px",
+    fontFamily: "'MedievalSharp', cursive",
+  }
 };
 
-export default SQLgame;
+export default SQLGame;
+

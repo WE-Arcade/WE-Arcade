@@ -65,14 +65,12 @@ const CryptogramGame = () => {
       setFeedback("Incorrect. Try again!");
     }
   };
-  
 
   const handleBack = () => {
     const params = new URLSearchParams(location.search);
     const returnToLevel = params.get("returnTo") || "1"; // Default to level 1 if missing
     navigate(`/mini-games-menu?returnTo=${returnToLevel}`); // Go back with correct level
   };
-  
 
   if (currentQuestionIndex === null) return <div>Loading...</div>;
   const currentQuestion = questions[currentQuestionIndex];
@@ -119,13 +117,27 @@ const CryptogramGame = () => {
 
 const styles = {
   container: {
+    position: "relative", // Required for pseudo-element positioning
     minHeight: "100vh",
     backgroundColor: "#003F66",
     backgroundImage: "url('/images/wallpaper1.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     padding: "20px",
+    overflow: "hidden", // Prevent overflow
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(101, 67, 33, 0.7)", // Translucent brown overlay
+      zIndex: 1, // Ensure it's above the background image but below the content
+    },
   },
   gameBox: {
     backgroundColor: "rgba(0, 0, 0, 0.8)",
@@ -134,6 +146,8 @@ const styles = {
     maxWidth: "600px",
     width: "100%",
     border: "2px solid #FFD700",
+    position: "relative", // Ensure it's above the overlay
+    zIndex: 2, // Ensure it's above the overlay
   },
   title: {
     color: "#FFD700",
@@ -142,36 +156,29 @@ const styles = {
     textAlign: "center",
     fontFamily: "'Press Start 2P', cursive",
   },
-  story: {
-    color: "#FFD700",
-    fontSize: "1.1rem",
-    marginBottom: "20px",
-    lineHeight: "1.6",
-    fontFamily: "'ADLaM Display', sans-serif",
-  },
   question: {
     color: "#FFFF00", // Yellow for questions
     fontSize: "1.2rem",
     marginBottom: "20px",
-    display: "block",
-    fontFamily: "'ADLaM Display', sans-serif",
+    textAlign: "center", // Center-align text
+    fontFamily: "'MedievalSharp', cursive", // Use MedievalSharp font
   },
   input: {
     width: "100%",
-    padding: "12px",
+    padding: "10px 0px",
     fontSize: "1rem",
     backgroundColor: "transparent",
     border: "2px solid #FFD700",
     borderRadius: "5px",
     color: "#FFD700",
     marginBottom: "20px",
-    fontFamily: "'ADLaM Display', sans-serif",
+    textAlign: "center", // Center-align text
+    fontFamily: "'MedievalSharp', cursive", // Use MedievalSharp font
   },
   buttonContainer: {
     display: "flex",
     justifyContent: "space-between",
     gap: "15px",
-    fontFamily: "'ADLaM Display', sans-serif",
   },
   submitButton: {
     backgroundColor: "#FFD700",
@@ -197,7 +204,7 @@ const styles = {
     marginTop: "20px",
     fontSize: "1.2rem",
     textAlign: "center",
-    fontFamily: "'ADLaM Display', sans-serif",
+    fontFamily: "'MedievalSharp', cursive", // Use MedievalSharp font
   },
   overlay: {
     position: "fixed",
@@ -209,7 +216,6 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    fontFamily: "'ADLaM Display', sans-serif",
   },
   popup: {
     backgroundColor: "#2F4F4F",
@@ -220,18 +226,15 @@ const styles = {
     maxWidth: "400px",
     width: "90%",
     textAlign: "center",
-    fontFamily: "'ADLaM Display', sans-serif",
   },
   popupTitle: {
     color: "#FFD700",
     marginBottom: "15px",
-    fontFamily: "'ADLaM Display', sans-serif",
   },
   popupContent: {
     color: "#FFD700",
     marginBottom: "20px",
     lineHeight: "1.6",
-    fontFamily: "'ADLaM Display', sans-serif",
   },
 };
 
