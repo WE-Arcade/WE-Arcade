@@ -100,6 +100,7 @@ const styles = {
     fontSize: "1.2rem",
     marginBottom: "30px",
     textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive",
   },
   buttonsContainer: {
     display: "flex",

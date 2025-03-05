@@ -216,6 +216,7 @@ const styles = {
     fontSize: "1.2rem",
     marginBottom: "20px",
     textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive",
   },
   codeBox: {
     backgroundColor: "#333",
@@ -338,6 +339,7 @@ const styles = {
     color: "#FFD700",
     fontSize: "1.1rem",
     marginBottom: "20px",
+    fontFamily: "'MedievalSharp', cursive",
   }
 };
 

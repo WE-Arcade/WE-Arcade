@@ -65,8 +65,10 @@ html, body {
 }
 
 .start-button:hover {
-  background-color: #ffc72c; /* Lighter gold on hover */
+  background-color: #634402;
   transform: scale(1.05);
+  color: #ffd324;
+  border: 1px solid white;
 }
 
 /* Responsive styles */
