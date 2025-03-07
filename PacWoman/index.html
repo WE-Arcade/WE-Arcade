@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>PacWoman</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <!-- Start Screen -->
+    <div class="overlay-screen" id="start-screen">
+      <h1>PACWOMAN</h1>
+      <h2 id="start-msg">Press ENTER to start</h2>
+      <h2>Use arrow keys to move</h2>
+
+      <!-- High Score Section -->
+      <h2>High Score: <span id="start-high-score">0</span></h2>
+
+  
+      <div id="rules-list" class="hidden">
+        <h3>Rules</h3>
+        <div class="rule-card">
+          <span class="rule-icon">🟡</span>
+          <p>Objective: Eat all pac-dots, power-ups and special question dots to win.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-icon">▶</span>
+          <p>Controls: Use arrow keys to move the PacWoman</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-icon">⚡</span>
+          <p>Eating a power-up makes ghosts scared for 10 seconds.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-icon">👻</span>
+          <p>Scared ghosts can be eaten for bonus points.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-icon">🌟</span>
+          <p>Special dots give bonus points and trigger fun questions!</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-icon">❓</span>
+          <p>Answering MCQ questions correctly rewards points, while incorrect answers deduct points.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-icon">🏆</span>
+          <p>Your high score is saved automatically. Keep pushing your limits!</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-icon">⏯️</span>
+          <p>Press ENTER to start the game and pause/resume during questions.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-icon">🕹️</span>
+          <p>Use arrow keys to move. Hold keys early for smooth turns.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-icon">⏲️</span>
+          <p>Ghosts have different personalities. Learn their behavior for an advantage.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Container -->
+    <div id="power-up-container"></div>
+    <div class="game-container">
+      <div class="grid"></div>
+      <h2>Score: <span id="score">0</span></h2>
+      <h2>High Score: <span id="high-score">0</span></h2>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div class="overlay-screen" id="game-over-screen">
+      <span>GAME OVER!</span>
+    </div>
+
+    <div class="overlay-screen" id="you-won-screen">
+      <span>YOU WON!</span>
+    </div>
+
+    <!-- Message Display Area -->
+    <div id="message-display" class="hidden"></div>
+<!-- Add this inside the <body> tag, preferably at the end -->
+<audio id="eat-dot-sound" src="./src/pacwoman/pacman_chomp.wav"></audio>
+<audio id="eat-power-pellet-sound" src="./src/pacwoman/pacman_extrapac.wav"></audio>
+<audio id="eat-special-dot-sound" src="./src/pacwoman/pacman_eatfruit.wav"></audio>
+<audio id="ghost-collision-sound" src="./src/pacwoman/pacman_eatghost.wav"></audio>
+<audio id="win-sound" src="./src/pacwoman/pacman_intermission.wav"></audio>
+<audio id="lose-sound" src="./src/pacwoman/pacman_death.wav"></audio>
+  </body>
+</html>
