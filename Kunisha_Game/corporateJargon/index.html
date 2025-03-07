@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Corporate Jargon</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    <!-- Load Press Start 2P for Title -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Load Pixelify Sans for Buttons -->
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+    <!--Load Micro 5 Static for quiz completion-->
+    <link href="https://fonts.googleapis.com/css2?family=Micro+5&display=swap" rel="stylesheet">
 </head>
 <body>
     <script>
@@ -29,6 +35,9 @@ class HomeScene extends Phaser.Scene {
         this.load.image('character2_sad', './assets/character2_sad.png');
         this.load.image('character3_happy', './assets/character3_happy.png');
         this.load.image('character3_sad', './assets/character3_sad.png');
+
+        // Load background music
+        this.load.audio('bg_music', './assets/bg_music.mp3');
     }
 
     create(data) {
@@ -41,7 +50,23 @@ class HomeScene extends Phaser.Scene {
             .setOrigin(0.5);
 
         // Add title text
-        this.add.text(centerX, 100, 'Welcome to Corporate Jargon!', { fontSize: '32px', fill: '#fff', fontStyle: 'bold' }).setOrigin(0.5);
+        this.add.text(centerX, 60, 'Welcome to', { 
+            fontSize: '66px', 
+            fontFamily: '"Press Start 2P"',  
+            fill: '#FF5733',  
+            stroke: '#000',  
+            strokeThickness: 6, 
+            align: 'center' 
+        }).setOrigin(0.5);
+
+        this.add.text(centerX, 140, 'Corporate Jargon!', { 
+            fontSize: '70px', 
+            fontFamily: '"Press Start 2P"',  
+            fill: '#8B93FF',  
+            stroke: '#000',  
+            strokeThickness: 6, 
+            align: 'center' 
+        }).setOrigin(0.5);
 
         // Determine selected character and state
         const characterKey = data && data.characterKey ? data.characterKey : 'character1_normal';
@@ -53,39 +78,69 @@ class HomeScene extends Phaser.Scene {
         this.selectedCharacterImage = this.add.image(150, centerY, characterKey);
         this.selectedCharacterImage.setDisplaySize(150, 200);
 
-        const buttonSpacing = 80;
-        const buttonStartY = centerY - buttonSpacing;
+        // Play background music
+        this.bgMusic = this.sound.add('bg_music', { loop: true, volume: 0.5 });
+        this.bgMusic.play();
 
-        // Start Game button
-        const startGameButton = this.add.text(centerX, buttonStartY, 'Start Game', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-            .setOrigin(0.5)
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.start('levelsScene', { characterKey });
-            });
+        // Define positions based on marked locations with slight right shift
+        const buttonPositions = {
+            startGame: {  x: centerX - 150, y: centerY + 20  },  
+            customizeCharacter: { x: centerX + 350, y: centerY + 20 }, 
+        };
 
-        // Customize Character button
-        const customizeCharacterButton = this.add.text(centerX, buttonStartY + buttonSpacing, 'Customize Character', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-            .setOrigin(0.5)
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.start('chooseCharacterScene');
-            });
+        const createNeonButton = (scene, x, y, text, callback) => {
+        const buttonWidth = text === "Customize Character" ? 280 : 250;
+        const buttonHeight = 60;
+        const borderRadius = 20;
+        
+        // Create the button background
+        const button = scene.add.graphics();
+        button.fillStyle(0x04D9FF, 1);  // Electric blue fill
+        button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
+        
+        // Neon glow effect
+        button.lineStyle(6, 0x00E3FF, 1);
+        button.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
 
-        // Leaderboard button
-        // const leaderboardButton = this.add.text(centerX, buttonStartY + buttonSpacing * 2, 'Leaderboard', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-        //     .setOrigin(0.5)
-        //     .setInteractive();
+        // Create the text
+        const buttonText = scene.add.text(0, 0, text, {
+            fontFamily: '"Pixelify Sans", sans-serif',
+            fontSize: text === "Customize Character" ? '24px' : '28px',
+            fill: '#000',
+            wordWrap: { width: buttonWidth - 20 }
+        }).setOrigin(0.5);
 
-        // Mini Games button
-        // const miniGameButton = this.add.text(centerX, buttonStartY + buttonSpacing * 3, 'Mini Games', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-        //     .setOrigin(0.5)
-        //     .setInteractive();
+        // Create a container for positioning
+        const buttonContainer = scene.add.container(x, y, [button, buttonText])
+            .setSize(buttonWidth, buttonHeight)
+            .setInteractive({ useHandCursor: true });
+
+        // Pointer interactions
+        buttonContainer.on('pointerover', () => {
+            button.setAlpha(0.8);
+        });
+        buttonContainer.on('pointerout', () => {
+            button.setAlpha(1);
+        });
+        buttonContainer.on('pointerdown', callback);
+
+        return buttonContainer;
+    };
+
+    // Create buttons 
+    // Start Game button
+    createNeonButton(this, buttonPositions.startGame.x, buttonPositions.startGame.y, 'Start Game', () => {
+        this.scene.start('levelsScene', { characterKey });
+    });
+
+    createNeonButton(this, buttonPositions.customizeCharacter.x, buttonPositions.customizeCharacter.y, 'Customize Character', () => {
+        this.scene.start('chooseCharacterScene');
+    });
     }
 }
 
 
-        class ChooseCharacterScene extends Phaser.Scene {
+    class ChooseCharacterScene extends Phaser.Scene {
     constructor() {
         super({ key: 'chooseCharacterScene' });
     }
@@ -112,12 +167,20 @@ class HomeScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(100, 100, 'Customise your Character', { fontSize: '32px', fill: '#fff' });
-        this.add.text(100, 50, 'Choose Your Character', { fontSize: '32px', fill: '#FFB6C1' });
+        const screenWidth = this.cameras.main.width;
+        const screenHeight = this.cameras.main.height;
 
-        const cardX = 200;
-        const cardY = 350;
+        // Centered title with Pixelify Sans font
+        this.add.text(screenWidth / 2, 100, 'Choose your Character', { 
+            fontFamily: '"Pixelify Sans", sans-serif', 
+            fontSize: '50px', 
+            fill: '#FF5733' 
+        }).setOrigin(0.5);
+
+        // this.add.text(100, 70, 'Choose Your Character', { fontSize: '32px', fill: '#FFB6C1' });
         const cardSpacing = 300;
+        const cardX = screenWidth / 2 - cardSpacing;
+        const cardY = screenHeight / 2;
         const arrowOffset = 120;
 
         // Define the character views for each character
@@ -140,9 +203,7 @@ class HomeScene extends Phaser.Scene {
         this.character3 = this.add.image(cardX + 2 * cardSpacing, cardY, 'character3_normal').setInteractive();
 
         // Set the display size for the character images
-        this.character1.setDisplaySize(200, 300);
-        this.character2.setDisplaySize(200, 300);
-        this.character3.setDisplaySize(200, 300);
+        [this.character1, this.character2, this.character3].forEach(character => character.setDisplaySize(200, 300));
 
         // Add arrows for navigation
         this.arrowLeft1 = this.add.image(cardX - arrowOffset, cardY, 'arrowLeft').setInteractive();
@@ -153,26 +214,17 @@ class HomeScene extends Phaser.Scene {
         this.arrowRight3 = this.add.image(cardX + 2 * cardSpacing + arrowOffset, cardY, 'arrowRight').setInteractive();
 
         // Add select buttons
-        const selectButton1 = this.add.text(cardX - 50, cardY + 180, 'Select', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.start('characterDisplayScene', { characterKey: 'character1' });
-            });
+        this.createNeonButton(cardX, cardY + 180, 'Select', () => this.scene.start('characterDisplayScene', { characterKey: 'character1' }));
+        this.createNeonButton(screenWidth / 2, cardY + 180, 'Select', () => this.scene.start('characterDisplayScene', { characterKey: 'character2' }));
+        this.createNeonButton(cardX + 2 * cardSpacing, cardY + 180, 'Select', () => this.scene.start('characterDisplayScene', { characterKey: 'character3' }));
 
-        const selectButton2 = this.add.text(cardX + cardSpacing - 50, cardY + 180, 'Select', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.start('characterDisplayScene', { characterKey: 'character2' });
-            });
-
-        const selectButton3 = this.add.text(cardX + 2 * cardSpacing - 50, cardY + 180, 'Select', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.start('characterDisplayScene', { characterKey: 'character3' });
-            });
 
         // Set up arrow functionality
         this.setupArrowFunctionality();
+
+        const backButton = this.createNeonButton(150, 40, 'Back', () => {
+            this.scene.start('HomeScene');
+        });
     }
 
     setupArrowFunctionality() {
@@ -206,6 +258,33 @@ class HomeScene extends Phaser.Scene {
             this.character3.setTexture(newImageKey);
             this.character3.setDisplaySize(200, 300);
         }
+    }
+    createNeonButton(x, y, text, callback) {
+        const buttonWidth = 180;
+        const buttonHeight = 50;
+        const borderRadius = 20;
+
+        const button = this.add.graphics();
+        button.fillStyle(0x04D9FF, 1);
+        button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
+        button.lineStyle(4, 0x00E3FF, 1);
+        button.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
+
+        const buttonText = this.add.text(0, 0, text, {
+            fontFamily: '"Pixelify Sans", sans-serif',
+            fontSize: '24px',
+            fill: '#000'
+        }).setOrigin(0.5);
+
+        const buttonContainer = this.add.container(x, y, [button, buttonText])
+            .setSize(buttonWidth, buttonHeight)
+            .setInteractive({ useHandCursor: true });
+
+        buttonContainer.on('pointerover', () => button.setAlpha(0.8));
+        buttonContainer.on('pointerout', () => button.setAlpha(1));
+        buttonContainer.on('pointerdown', callback);
+
+        return buttonContainer;
     }
 }
 class CharacterDisplayScene extends Phaser.Scene {
@@ -286,22 +365,52 @@ class CharacterDisplayScene extends Phaser.Scene {
     }
 
     createNavigationButtons(characterKey) {
-        const backButton = this.add.text(100, 50, 'Back', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.start('chooseCharacterScene');
-            });
+        const createRoundedButton = (scene, x, y, text, callback) => {
+        const buttonWidth = 120;
+        const buttonHeight = 50;
+        const borderRadius = 15;
 
-        const homeButton = this.add.text(200, 50, 'Done', { fontSize: '24px', fill: '#fff', backgroundColor: '#4286f4', padding: { left: 10, right: 10, top: 5, bottom: 5 } })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.start('HomeScene', {
-                    characterKey: this.chosenCharacterImage.texture.key,
-                    characterViewKey: characterKey,
-                    currentImageIndex: this.characterIndex[characterKey],
-                    characterViews: this.characterViews[characterKey]
-                });
-            });
+        // Create the button background
+        const button = scene.add.graphics();
+        button.fillStyle(0x04D9FF, 1); // Vibrant neon blue
+        button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
+        button.lineStyle(3, 0x00E3FF, 1); // Slightly darker border
+        button.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
+
+        // Create the text
+        const buttonText = scene.add.text(0, 0, text, {
+            fontFamily: '"Pixelify Sans", sans-serif',
+            fontSize: '28px',
+            fill: '#fff',
+            align: 'center'
+        }).setOrigin(0.5);
+
+        // Create a container to group the button and text
+        const buttonContainer = scene.add.container(x, y, [button, buttonText])
+            .setSize(buttonWidth, buttonHeight)
+            .setInteractive({ useHandCursor: true });
+
+        // Button interactions
+        buttonContainer.on('pointerover', () => button.fillStyle(0x008FCC, 1).fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius));
+        buttonContainer.on('pointerout', () => button.fillStyle(0x00AEEF, 1).fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius));
+        buttonContainer.on('pointerdown', callback);
+
+        return buttonContainer;
+    };
+
+    // Create buttons using the function
+    const backButton = createRoundedButton(this, 800, 300, 'Back', () => {
+        this.scene.start('chooseCharacterScene');
+    });
+
+    const homeButton = createRoundedButton(this, 1000, 300, 'Done', () => {
+        this.scene.start('HomeScene', {
+            characterKey: this.chosenCharacterImage.texture.key,
+            characterViewKey: characterKey,
+            currentImageIndex: this.characterIndex[characterKey],
+            characterViews: this.characterViews[characterKey]
+        });
+    });
     }
 }
         class LevelsScene extends Phaser.Scene {
@@ -319,7 +428,7 @@ class CharacterDisplayScene extends Phaser.Scene {
             create() {
                 const centerX = this.cameras.main.centerX;
                 const centerY = this.cameras.main.centerY;
-                const levelSpacing = 300;
+                const levelSpacing = 250;
 
                 const levelData = [
                     { name: 'Level 1', imageKey: 'level1Image', sceneKey: 'QuizScene', level: 1 },
@@ -333,43 +442,94 @@ class CharacterDisplayScene extends Phaser.Scene {
                 levelData.forEach((level, index) => {
                     const x = startX + index * levelSpacing;
 
-                    const image = this.add.image(x, centerY, level.imageKey);
+                    const image = this.add.image(x, centerY, level.imageKey).setDisplaySize(230, 230);
                     image.setInteractive();
-                    image.setDisplaySize(230, 230);
-                    image.setTint(0xffffff);
-
+                    const mask = this.createRoundedRectangleMask(230, 230, 30);
+                    image.setMask(mask);
                     const text = this.add.text(x, centerY + 150, level.name, {
-                        fontSize: '20px',
-                        fill: '#ffffff',
-                        align: 'center'
-                    });
+                        fontFamily: '"Pixelify Sans", sans-serif',
+                        fontSize: '28px',
+                        fill: '#00ff7f',
+                        align: 'center',
+                    }).setOrigin(0.5);
                     text.setOrigin(0.5);
+
+                    image.on('pointerover', () => {
+                        image.setTint(0x00ff7f); // Neon Green Glow
+                        this.tweens.add({
+                            targets: image,
+                            y: image.y - 10, // Moves up slightly
+                            duration: 200,
+                            ease: 'Sine.easeInOut'
+                        });
+                    });
+
+                    image.on('pointerout', () => {
+                        image.clearTint();
+                        this.tweens.add({
+                            targets: image,
+                            y: image.y + 10, // Moves back to original position
+                            duration: 200,
+                            ease: 'Sine.easeInOut'
+                        });
+                    });
 
                     image.on('pointerdown', () => {
                         console.log('Starting ' + level.name);
                         this.scene.start(level.sceneKey, { level: level.level });
                     });
-
-                    image.on('pointerover', () => {
-                        image.setTint(0xff0000);
-                    });
-
-                    image.on('pointerout', () => {
-                        image.setTint(0xffffff);
-                    });
                 });
 
-                const backButton = this.add.text(100, 50, 'Back', { 
-                    fontSize: '24px', 
-                    fill: '#fff', 
-                    backgroundColor: '#4286f4', 
-                    padding: { left: 10, right: 10, top: 5, bottom: 5 } 
-                })
-                .setInteractive()
-                .on('pointerdown', () => {
+                this.createExitButton();
+            }
+            createExitButton() {
+                const buttonWidth = 120;
+                const buttonHeight = 50;
+                const borderRadius = 15;
+                const x = 100, y = 50;
+
+                const button = this.add.graphics();
+                button.fillStyle(0xFF5733, 1);
+                button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
+                button.lineStyle(2, 0xFFFFFF, 1);
+                button.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
+
+                const buttonText = this.add.text(0, 0, 'Exit', {
+                    fontFamily: '"Pixelify Sans", sans-serif',
+                    fontSize: '28px',
+                    fill: '#fff',
+                    align: 'center'
+                }).setOrigin(0.5);
+
+                const exitButton = this.add.container(x, y, [button, buttonText])
+                    .setSize(buttonWidth, buttonHeight)
+                    .setInteractive({ useHandCursor: true });
+
+                exitButton.on('pointerover', () => {
+                    button.clear();
+                    button.fillStyle(0xD43B14, 1);
+                    button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
+                });
+
+                exitButton.on('pointerout', () => {
+                    button.clear();
+                    button.fillStyle(0xFF5733, 1);
+                    button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, borderRadius);
+                });
+
+                exitButton.on('pointerdown', () => {
+                    console.log('Exiting to Home Scene');
                     this.scene.start('HomeScene');
                 });
             }
+            createRoundedRectangleMask(width, height, radius) {
+            const shape = this.make.graphics();
+            shape.fillStyle(0xffffff);
+            shape.fillRoundedRect(0, 0, width, height, radius);
+            const mask = shape.createBitmapMask(); // Correct mask type
+            shape.destroy(); // Cleanup
+            return mask;
+    }
         }
 
         class QuizScene extends Phaser.Scene {
@@ -410,18 +570,16 @@ class CharacterDisplayScene extends Phaser.Scene {
         ).setOrigin(0.5)
          .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
          .setDepth(-1);
+         
+        
 
-        this.add.text(300, 50, `Level ${this.level} Quiz`, { fontSize: "24px", fill: "#fff" });
 
         this.character = this.add.image(150, this.cameras.main.centerY + 200, this.selectedCharacter)
             .setOrigin(0.5)
             .setScale(1);
 
         try {
-            // Make sure this URL matches your deployed Render URL
-            const apiBaseUrl = 'https://corporate-jargon.onrender.com'; // Update this with your actual Render URL
-            const response = await fetch(`${apiBaseUrl}/questions/${this.level}`);
-            
+            const response = await fetch(`https://corporate-jargon.onrender.com/questions/${this.level}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -440,115 +598,167 @@ class CharacterDisplayScene extends Phaser.Scene {
 
         this.createExitButton();
     }
+    
+    showQuestion = () => {
+    this.clearScene();
+    this.answered = false; // Reset answered state for the new question
 
-    showQuestion() {
-        this.clearScene();
-        this.answered = false; // Reset answered state for the new question
+    if (this.currentQuestionIndex >= this.questions.length) {
+        this.scene.start("QuizCompletedScene", {
+            score: this.correctAnswers,
+            total: this.questions.length
+        });
+        return;
+    }
 
-        if (this.currentQuestionIndex >= this.questions.length) {
-            this.scene.start("QuizCompletedScene", {
-                score: this.correctAnswers,
-                total: this.questions.length
-            });
-            return;
-        }
+    // Reset character to normal expression at the start of each question
+    const baseCharacterName = this.selectedCharacter.split('_')[0];
+    this.character.setTexture(`${baseCharacterName}_normal`);
 
-        // Reset character to normal expression at the start of each question
-        const baseCharacterName = this.selectedCharacter.split('_')[0];
-        this.character.setTexture(`${baseCharacterName}_normal`);
+    const questionData = this.questions[this.currentQuestionIndex];
+    const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.centerY;
 
-        const questionData = this.questions[this.currentQuestionIndex];
-
-        const centerX = this.cameras.main.centerX;
-        const centerY = this.cameras.main.centerY;
-
-        let questionBox = this.add.rectangle(centerX, centerY - 150, 700, 100, 0xFFD700).setOrigin(0.5);
+    let questionBox = this.add.rectangle(centerX, centerY - 150, 750, 120, 0x111111)
+        .setOrigin(0.5)
+        .setStrokeStyle(4, 0xFF007F); // Neon Pink Border
 
         this.add.text(centerX, centerY - 150, `QUESTION:\n${questionData.question}`, { 
-            fontSize: "18px", 
-            fill: "#000", 
-            fontStyle: "bold", 
-            wordWrap: { width: 600 },
+            fontSize: "20px", 
+            fill: "#00FFFF", // Neon Cyan Text
+            fontFamily: "Pixelify Sans",
+            fontStyle: "bold",
+            wordWrap: { width: 700 },
             align: "center" 
         }).setOrigin(0.5);
 
-        this.answerBoxes = [];
-        this.correctAnswerIndex = questionData.options.findIndex(option => option.trim() === questionData.answer.trim());
-
-        questionData.options.forEach((option, index) => {
-            let yPos = centerY - 50 + index * 80;
-            let optionBox = this.add.rectangle(centerX, yPos, 600, 60, 0xAABEFF).setOrigin(0.5);
-            let optionText = this.add.text(centerX, yPos, `⚫ ${option}`, { 
-                fontSize: "16px", 
-                fill: "#000", 
-                fontStyle: "bold" 
-            })
-            .setOrigin(0.5)
-            .setInteractive()
-            .on("pointerdown", () => {
-                if (!this.answered) { // Prevent re-answering
-                    this.checkAnswer(index, optionBox);
-                }
-            });
-
-            this.answerBoxes.push(optionBox);
+        this.tweens.add({
+            targets: questionBox,
+            alpha: { from: 1, to: 0.8 },
+            duration: 600,
+            yoyo: true,
+            repeat: -1
         });
 
-        this.createExitButton();
-        this.createNavigationButtons();
-    }
+    this.answerBoxes = [];
+    this.correctAnswerIndex = questionData.options.findIndex(option => option.trim() === questionData.answer.trim());
 
-    createNavigationButtons() {
+    questionData.options.forEach((option, index) => {
+        let yPos = centerY - 50 + index * 80;
+        let optionBox = this.add.rectangle(centerX, yPos, 650, 70, 0x222222)
+            .setOrigin(0.5)
+            .setStrokeStyle(3, 0x00FFFF);
+
+        let optionText = this.add.text(centerX, yPos, `🟡 ${option}`, { 
+            fontSize: "18px", 
+            fill: "#FF007F", // Neon Pink Text
+            fontFamily: "Pixelify Sans",
+            fontStyle: "bold" 
+        }).setOrigin(0.5)
+        .setInteractive()
+        .on("pointerdown", () => {
+            if (!this.answered) { // Prevent re-answering
+                this.checkAnswer(index, optionBox);
+            }
+        });
+        // Hover effect: Glow effect on hover
+        optionText.on("pointerover", () => {
+            optionBox.setStrokeStyle(4, 0xFFFF00); // Neon Yellow Glow
+            optionText.setColor("#FFFF00");
+        });
+
+        optionText.on("pointerout", () => {
+            optionBox.setStrokeStyle(3, 0x00FFFF);
+            optionText.setColor("#FF007F");
+        });
+
+        this.answerBoxes.push(optionBox);
+    });
+
+    this.createExitButton();
+    this.createNavigationButtons();
+}
+
+    createNavigationButtons = () => {
         const centerX = this.cameras.main.centerX;
         const centerY = this.cameras.main.centerY + 200;
 
         if (this.currentQuestionIndex > 0) {
-            let backButton = this.add.rectangle(centerX - 150, centerY + 100, 120, 50, 0x6A5ACD).setOrigin(0.5);
-            this.add.text(centerX - 150, centerY + 100, "⬅ Back", { fontSize: "18px", fill: "#fff" })
+            let backButton = this.add.rectangle(centerX - 150, centerY + 100, 120, 50, 0xFF1493) // Hot pink
                 .setOrigin(0.5)
-                .setInteractive()
-                .on("pointerdown", () => {
-                    this.currentQuestionIndex--;
-                    this.showQuestion();
-                });
+                .setStrokeStyle(4, 0x8A2BE2); // Neon purple border
+
+            let backButtonText = this.add.text(centerX - 150, centerY + 100, "⬅ Back", {
+                fontSize: "18px",
+                fontFamily: "Pixelify Sans",
+                fill: "#FFD700", // Cyberpunk yellow text
+                stroke: "#000000",
+                strokeThickness: 3
+            }).setOrigin(0.5)
+            .setInteractive()
+            .on("pointerdown", () => {
+                this.currentQuestionIndex--;
+                this.showQuestion();
+            })
+            .on("pointerover", () => {
+                backButton.setFillStyle(0x8A2BE2); // Changes to neon purple on hover
+            })
+            .on("pointerout", () => {
+                backButton.setFillStyle(0xFF1493); // Reverts to hot pink
+            });
         }
 
-        this.nextButton = this.add.rectangle(centerX + 150, centerY + 100, 120, 50, 0x6A5ACD).setOrigin(0.5);
-        this.nextButtonText = this.add.text(centerX + 150, centerY + 100, "Next ➡", { fontSize: "18px", fill: "#fff" })
+        this.nextButton = this.add.rectangle(centerX + 150, centerY + 100, 120, 50, 0x8A2BE2) // Neon purple
             .setOrigin(0.5)
-            .setInteractive()
-            .on("pointerdown", () => this.nextQuestion());
+            .setStrokeStyle(4, 0xFF1493); // Hot pink border
+
+        this.nextButtonText = this.add.text(centerX + 150, centerY + 100, "Next ➡", {
+            fontSize: "18px",
+            fontFamily: "Pixelify Sans",
+            fill: "#FFD700", // Cyberpunk yellow text
+            stroke: "#000000",
+            strokeThickness: 3
+        }).setOrigin(0.5)
+        .setInteractive()
+        .on("pointerdown", () => this.nextQuestion())
+        .on("pointerover", () => {
+            this.nextButton.setFillStyle(0xFF1493); // Changes to hot pink on hover
+        })
+        .on("pointerout", () => {
+            this.nextButton.setFillStyle(0x8A2BE2); // Reverts to neon purple
+        });
 
         this.nextButton.setVisible(false);
         this.nextButtonText.setVisible(false);
+
     }
 
-    nextQuestion() {
+    nextQuestion = () => {
         this.currentQuestionIndex++;
         this.showQuestion();
     }
 
-    checkAnswer(index, optionBox) {
-        this.answered = true; // Mark the question as answered
+    checkAnswer = (index, optionBox) => {
+    this.answered = true; // Mark the question as answered
 
-        // Extract the base character name (e.g., "character1", "character2", etc.)
-        const baseCharacterName = this.selectedCharacter.split('_')[0];
+    // Extract the base character name (e.g., "character1", "character2", etc.)
+    const baseCharacterName = this.selectedCharacter.split('_')[0];
 
-        if (index === this.correctAnswerIndex) {
-            optionBox.setFillStyle(0x32CD32);
-            this.correctAnswers++;
-            this.character.setTexture(`${baseCharacterName}_happy`); // Change to happy expression
-            this.time.delayedCall(1000, () => this.nextQuestion()); // Automatically go to the next question after 1 second
-        } else {
-            optionBox.setFillStyle(0xFF6347);
-            this.character.setTexture(`${baseCharacterName}_sad`); // Change to sad expression
-            this.nextButton.setVisible(true);
-            this.nextButtonText.setVisible(true);
-        }
-
-        // Disable further interaction with answer options
-        this.answerBoxes.forEach(box => box.disableInteractive());
+    if (index === this.correctAnswerIndex) {
+        optionBox.setFillStyle(0x32CD32);
+        this.correctAnswers++;
+        this.character.setTexture(`${baseCharacterName}_happy`); // Change to happy expression
+        this.time.delayedCall(1000, () => this.nextQuestion()); // Automatically go to the next question after 1 second
+    } else {
+        optionBox.setFillStyle(0xFF6347);
+        this.character.setTexture(`${baseCharacterName}_sad`); // Change to sad expression
+        this.nextButton.setVisible(true);
+        this.nextButtonText.setVisible(true);
     }
+
+    // Disable further interaction with answer options
+    this.answerBoxes.forEach(box => box.disableInteractive());
+}
 
     clearScene() {
         this.children.list.forEach(child => {
@@ -559,13 +769,32 @@ class CharacterDisplayScene extends Phaser.Scene {
     }
 
     createExitButton() {
-        this.add.text(25, 25, "Exit Quiz", { fontSize: "18px", fill: "#fff" })
-            .setInteractive()
-            .on("pointerdown", () => {
-                this.scene.start("levelsScene");
+            let exitButton = this.add.rectangle(100, 50, 150, 50, 0xFF007F)
+                .setOrigin(0.5)
+                .setStrokeStyle(2, 0x00FFFF)
+                .setInteractive()
+                .on("pointerdown", () => {
+                    this.scene.start("levelsScene");
+                });
+
+            let exitText = this.add.text(100, 50, "Exit Quiz", {
+                fontSize: "20px",
+                fill: "#00FFFF",
+                fontFamily: "Pixelify Sans",
+                fontStyle: "bold"
+            }).setOrigin(0.5);
+
+            // Neon Glow Animation
+            this.tweens.add({
+                targets: [exitButton, exitText],
+                alpha: { from: 1, to: 0.6 },
+                duration: 800,
+                yoyo: true,
+                repeat: -1
             });
-    }
+        }
 }
+
 class QuizCompletedScene extends Phaser.Scene {
     constructor() {
         super({ key: 'QuizCompletedScene' });
@@ -576,35 +805,70 @@ class QuizCompletedScene extends Phaser.Scene {
         this.total = data.total || 0;
     }
 
-    preload() {
-        this.load.image('background', 'assets/home_bg.jpeg');
-    }
-
     create() {
-        // Add background image and scale it to cover the entire screen
-        const bg = this.add.image(0, 0, 'background').setOrigin(0, 0);
-        bg.setDisplaySize(this.scale.width, this.scale.height);
+        
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
 
-        // Centered text
-        this.add.text(this.scale.width / 2, this.scale.height / 4, "QUIZ COMPLETED!", { fontSize: "48px", fill: "#ffffff" }).setOrigin(0.5);
-        this.add.text(this.scale.width / 2, this.scale.height / 3, `Your Score: ${this.score} / ${this.total}`, { fontSize: "32px", fill: "#00ff00" }).setOrigin(0.5);
+        
+        this.add.text(centerX, centerY - 200, "QUIZ COMPLETED!", {
+            fontSize: "72px", // Increased font size
+            fill: "#FF00FF",
+            fontFamily: "Pixelify Sans",
+            fontStyle: "bold",
+            stroke: "#00FFFF",
+            strokeThickness: 12,
+            shadow: { offsetX: 5, offsetY: 5, color: "#00FF00", blur: 12, fill: true }
+        }).setOrigin(0.5);
 
-        // Exit button and text, centered
-        let exitButton = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 200, 60, 0xFF4500).setOrigin(0.5).setInteractive();
-        this.add.text(this.scale.width / 2, this.scale.height / 2, "Exit to Menu", { fontSize: "24px", fill: "#ffffff" }).setOrigin(0.5);
+        this.add.text(centerX, centerY - 50, `Your Score: ${this.score} / ${this.total}`, {
+            fontSize: "64px", 
+             fill: "#00FFAA",
+            fontFamily: '"Micro 5"',
+            fontStyle: "bold",
+            stroke: "#000000",
+            strokeThickness: 2, 
+            letterSpacing: 3,
+            shadow: { offsetX: 4, offsetY: 4, color: "#00FFFF", blur: 10, fill: true }
+        }).setOrigin(0.5);
 
-        exitButton.on("pointerdown", () => {
-            this.scene.start("levelsScene");
+        // Exit Button 
+        let exitButton = this.add.rectangle(centerX, centerY + 150, 300, 60, 0xFF007F)
+            .setOrigin(0.5)
+            .setStrokeStyle(5, 0x00FFFF)
+            .setInteractive()
+            .on("pointerdown", () => {
+                this.scene.start("levelsScene");
+            });
+
+        // Exit Text
+        let exitText = this.add.text(centerX, centerY + 150, "Return to Menu", {
+            fontSize: "32px",
+            fill: "#00FFFF",
+            fontFamily: "Pixelify Sans",
+            fontStyle: "bold",
+            stroke: "#FF007F",
+            strokeThickness: 6,
+            shadow: { offsetX: 3, offsetY: 3, color: "#00FF00", blur: 8, fill: true }
+        }).setOrigin(0.5);
+        this.tweens.add({
+            targets: [exitButton, exitText],
+            scale: { from: 1, to: 1.05 },
+            alpha: { from: 1, to: 0.85 },
+            duration: 800,
+            yoyo: true,
+            repeat: -1
         });
     }
 }
 
 
 
+
         const config = {
             type: Phaser.AUTO,
-            width: 1500,
-            height: 700,
+            width: window.innerWidth, // Set width to the browser window's width
+            height: window.innerHeight, // Set height to the browser window's height
             physics: {
                 default: 'arcade',
                 arcade: {
@@ -616,6 +880,11 @@ class QuizCompletedScene extends Phaser.Scene {
         };
 
         const game = new Phaser.Game(config);
+
+        // Add a resize event listener to adjust the game size when the window is resized
+        window.addEventListener('resize', () => {
+            game.scale.resize(window.innerWidth, window.innerHeight);
+});
     </script>
 </body>
 </html>
