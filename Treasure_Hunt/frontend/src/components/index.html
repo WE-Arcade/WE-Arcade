@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game 2: Code Scramble</title>
+    <style>
+        body {
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+        .overlay {
+            width: 70%;
+            margin: auto;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.85); /* Dark transparent box */
+            border-radius: 15px;
+            color: #ffcc00;
+            text-align: center;
+        }
+        .code-box {
+            background-color: #444;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: grab;
+            font-family: monospace;
+            white-space: pre;
+            display: block;
+            color: #fff;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .submit-btn, .back-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .submit-btn { background-color: yellow; }
+        .back-btn { background-color: red; color: white; }
+        select {
+            margin-bottom: 15px;
+            padding: 5px;
+            font-size: 16px;
+            background: #222;
+            color: #ffcc00;
+            border: 1px solid #ffcc00;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <h1>Game: Code Scramble</h1>
+        <p>Choose a code snippet and rearrange the lines to form a correct C++ program:</p>
+
+        <select id="snippet-selector" onchange="loadSnippet()">
+            <option value="loop">For Loop Printing 1-5</option>
+            <option value="swap">Swap Two Variables</option>
+            <option value="function">Simple Function</option>
+            <option value="array">Array Sum Calculation</option>
+        </select>
+
+        <div id="code-container"></div>
+
+        <div class="buttons">
+            <button class="submit-btn" onclick="checkAnswer()">✔ Submit</button>
+            <button class="back-btn" onclick="location.reload()">⬅ Back</button>
+        </div>
+
+        <p id="message"></p>
+    </div>
+
+    <script src="code-snippets.js"></script>
+</body>
+</html>

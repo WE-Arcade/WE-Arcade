@@ -1,0 +1,585 @@
+@font-face {
+  font-family: "PressStart2P";
+  src: url("./src/pacwoman/fonts/PressStart2P.ttf");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "PressStart2P", sans-serif;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 560px;
+  height: 560px;
+  border: 0.2px solid rgb(1, 17, 17);
+}
+
+.grid div {
+  width: 20px;
+  height: 20px;
+}
+
+.power-pellet {
+  background-color: rgb(14, 233, 14);
+  border: solid black 4px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.pac-dot {
+  background-color: yellow;
+  border: solid black 7px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.special-dot {
+  position: relative;
+  width: 20px; /* Same size as the dots */
+  height: 20px; /* Same size as the dots */
+  border: none; /* Remove border */
+  background-color: transparent; /* Make background transparent */
+}
+
+.special-dot::before {
+  content: '?'; /* Use question mark */
+  font-size: 20px; /* Adjust size as needed */
+  color: red; /* Change color as needed */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* 
+.special-dot-1 {
+  background-color: red;
+  border: solid black 7px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.special-dot-2 {
+  background-color: blue;
+  border: solid black 7px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.special-dot-3 {
+  background-color: green;
+  border: solid black 7px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.special-dot-4 {
+  background-color: yellow;
+  border: solid black 7px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.special-dot-5 {
+  background-color: purple;
+  border: solid black 7px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.special-dot-6 {
+  background-color: orange;
+  border: solid black 7px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.special-dot-7 {
+  background-color: pink;
+  border: solid black 7px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.special-dot-8 {
+  background-color: cyan;
+  border: solid black 7px;
+  box-sizing: border-box;
+  border-radius: 10px;
+} */
+
+/* Ghost Base Styles */
+.ghost {
+  border: 0px;
+  border-radius: 50% 50% 0 0; /* Rounded top, flat bottom */
+  position: relative;
+  animation: float 2s infinite ease-in-out; /* Floating animation */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Glow effect */
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px); /* Move up and down */
+  }
+}
+
+/* Ghost Eyes */
+.ghost::before,
+.ghost::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: white;
+  border-radius: 50%;
+  top: 30%; /* Position of eyes */
+}
+
+.ghost::before {
+  left: 25%; /* Left eye position */
+}
+
+.ghost::after {
+  right: 25%; /* Right eye position */
+}
+
+/* Ghost Pupils */
+.ghost::before::after,
+.ghost::after::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background-color: black;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Scared Ghost */
+.scared-ghost {
+  background-color: purple;
+  animation: scared 1s infinite alternate; /* Scared animation */
+}
+
+@keyframes scared {
+  0% {
+    background-color: purple;
+  }
+  100% {
+    background-color: rgb(150, 0, 150); /* Darker purple */
+  }
+}
+
+/* Blinky (Red Ghost) */
+.blinky {
+  background-color: red;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); /* Red glow */
+}
+
+/* Stinky (Pink Ghost) */
+.stinky {
+  background-color: rgb(221, 18, 130);
+  box-shadow: 0 0 15px rgba(221, 18, 130, 0.8); /* Pink glow */
+}
+
+/* Inky (Cyan Ghost) */
+.inky {
+  background-color: rgb(15, 214, 204);
+  box-shadow: 0 0 15px rgba(15, 214, 204, 0.8); /* Cyan glow */
+}
+
+/* Clyde (Orange Ghost) */
+.clyde {
+  background-color: rgb(243, 125, 78);
+  box-shadow: 0 0 15px rgba(243, 125, 78, 0.8); /* Orange glow */
+}
+
+.wall {
+  background-color: rgb(8, 14, 102);
+}
+
+.pac-man {
+  background-color: rgb(247, 232, 22);
+  border-radius: 10px;
+}
+
+h2 {
+  color: white;
+  font-weight: normal;
+  text-align: center;
+}
+
+.low-score {
+  color: red;
+}
+
+.mid-score {
+  color: yellow;
+}
+
+.high-score {
+  color: red;
+}
+
+#start-screen {
+  background-color: black;
+  color: white;
+  flex-direction: column;
+  align-items: center;
+}
+
+#start-screen h1 {
+  color: yellow;
+  font-size: 4rem;
+  margin-top: 15vh;
+  margin-bottom: 40px;
+  animation: colours 1s infinite;
+}
+
+#start-msg {
+  animation: blink 0.8s infinite;
+}
+
+#start-screen h2 {
+  margin: 15px 0px;
+}
+
+#start-screen h3 {
+  margin: 20px 0px;
+}
+
+#game-over-screen {
+  align-items: center;
+  color: red;
+  font-size: 6rem;
+  justify-content: center;
+  animation: blink 0.8s infinite;
+  display: none;
+}
+
+#you-won-screen {
+  align-items: center;
+  color: #0bf117;
+  font-size: 6rem;
+  justify-content: center;
+  animation: blink 0.8s infinite;
+  display: none;
+}
+
+.overlay-screen {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+}
+
+/* Rules Button */
+#rules-button {
+  background-color: yellow;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  font-family: "PressStart2P", sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+#rules-button:hover {
+  background-color: #ffcc00; /* Lighter yellow on hover */
+}
+
+/* Rules List Container */
+#rules-list {
+  margin-top: 20px;
+  text-align: left;
+  color: white;
+  font-size: 1rem;
+  max-width: 500px; /* Wider container for better readability */
+  max-height: 400px; /* Increased height for more content */
+  overflow-y: auto; /* Add a scrollbar if the content overflows */
+  padding: 20px;
+  margin-bottom: 30px;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); /* Glow effect */
+}
+
+#rules-list h3 {
+  color: yellow;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Rule Card Styling */
+.rule-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1); /* Slight background for each card */
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rule-card:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2); /* Glow effect on hover */
+}
+
+/* Rule Icon Styling */
+.rule-icon {
+  font-size: 1.5rem;
+  margin-right: 15px;
+  width: 40px;
+  text-align: center;
+}
+
+/* Rule Text Styling */
+.rule-card p {
+  margin: 0;
+  line-height: 1.5;
+  flex: 1; /* Allow text to take up remaining space */
+}
+
+/* Animations */
+@keyframes colours {
+  0% {
+    color: yellow;
+  }
+  31% {
+    color: yellow;
+  }
+  33% {
+    color: #dd1282;
+  }
+  65% {
+    color: #dd1282;
+  }
+  66% {
+    color: #0fd6cc;
+  }
+  99% {
+    color: #0fd6cc;
+  }
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  61% {
+    opacity: 0;
+  }
+  99% {
+    opacity: 0;
+  }
+}
+
+/* Popup for MCQ Questions */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #2c3e50;
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  font-size: 1.2rem;
+  z-index: 1000;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.popup p {
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.popup ul {
+  list-style: none;
+  padding: 0;
+}
+
+.popup ul li {
+  margin: 10px 0;
+}
+
+.popup ul li button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.popup ul li button:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
+.popup ul li button:active {
+  transform: scale(0.95);
+}
+
+.popup ul li button.correct {
+  background-color: #2ecc71;
+}
+
+.popup ul li button.incorrect {
+  background-color: #e74c3c;
+}
+
+.popup ul li button.disabled {
+  background-color: #7f8c8d;
+  cursor: not-allowed;
+}
+
+.popup .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.popup .close-button:hover {
+  color: #e74c3c;
+}
+
+#message-display {
+  position: fixed;
+  top: 40%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); 
+  background-color: rgba(0, 0, 0, 0.9); 
+  color: white;
+  padding: 20px 30px; 
+  border-radius: 15px; 
+  z-index: 1000;
+  display: none; 
+  font-size: 1.5rem; 
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); 
+  animation: fadeIn 0.5s ease; 
+}
+
+/* Animation for fading in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%); /* Start slightly above */
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%); /* End at the center */
+  }
+}
+
+/* Blackout Overlay Styles */
+.blackout-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9); /* Maintain a strong overlay */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-size: 3rem;
+  text-align: center;
+}
+
+/* Timer Styles */
+#blackout-timer {
+  font-size: 6rem; /* Increase font size for better visibility */
+  color: #FF4500; /* Use a bright color for contrast */
+  margin-top: 20px; /* Space between the message and timer */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Add shadow for depth */
+  animation: fadeIn 0.5s ease, pulse 1s infinite; /* Combine animations */
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Pulsing Animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1); /* Slightly enlarge */
+  }
+  100% {
+    transform: scale(1);
+  }
+}
