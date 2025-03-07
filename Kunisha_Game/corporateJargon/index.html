@@ -78,9 +78,13 @@ class HomeScene extends Phaser.Scene {
         this.selectedCharacterImage = this.add.image(150, centerY, characterKey);
         this.selectedCharacterImage.setDisplaySize(150, 200);
 
-        // Play background music
-        this.bgMusic = this.sound.add('bg_music', { loop: true, volume: 0.5 });
-        this.bgMusic.play();
+        // Play background music (only if it's not already playing)
+        if (!this.registry.get('bgMusic')) {
+            const bgMusic = this.sound.add('bg_music', { loop: true, volume: 0.5 });
+            bgMusic.play();
+            this.registry.set('bgMusic', bgMusic); // Store music instance in registry
+        }
+
 
         // Define positions based on marked locations with slight right shift
         const buttonPositions = {
@@ -136,6 +140,14 @@ class HomeScene extends Phaser.Scene {
     createNeonButton(this, buttonPositions.customizeCharacter.x, buttonPositions.customizeCharacter.y, 'Customize Character', () => {
         this.scene.start('chooseCharacterScene');
     });
+    }
+    shutdown() {
+        // Stop the music when transitioning out of the HomeScene
+        const bgMusic = this.registry.get('bgMusic');
+        if (bgMusic) {
+            bgMusic.stop();
+            this.registry.remove('bgMusic'); // Remove the music instance from the registry
+        }
     }
 }
 
