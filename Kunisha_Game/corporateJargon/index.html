@@ -11,9 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <!--Load Micro 5 Static for quiz completion-->
     <link href="https://fonts.googleapis.com/css2?family=Micro+5&display=swap" rel="stylesheet">
-
-
-
 </head>
 <body>
     <script>
@@ -38,6 +35,9 @@ class HomeScene extends Phaser.Scene {
         this.load.image('character2_sad', './assets/character2_sad.png');
         this.load.image('character3_happy', './assets/character3_happy.png');
         this.load.image('character3_sad', './assets/character3_sad.png');
+
+        // Load background music
+        this.load.audio('bg_music', './assets/bg_music.mp3');
     }
 
     create(data) {
@@ -77,6 +77,14 @@ class HomeScene extends Phaser.Scene {
         // Display the selected character on the left side
         this.selectedCharacterImage = this.add.image(150, centerY, characterKey);
         this.selectedCharacterImage.setDisplaySize(150, 200);
+
+        // Play background music (only if it's not already playing)
+        if (!this.registry.get('bgMusic')) {
+            const bgMusic = this.sound.add('bg_music', { loop: true, volume: 0.5 });
+            bgMusic.play();
+            this.registry.set('bgMusic', bgMusic); // Store music instance in registry
+        }
+
 
         // Define positions based on marked locations with slight right shift
         const buttonPositions = {
@@ -132,19 +140,19 @@ class HomeScene extends Phaser.Scene {
     createNeonButton(this, buttonPositions.customizeCharacter.x, buttonPositions.customizeCharacter.y, 'Customize Character', () => {
         this.scene.start('chooseCharacterScene');
     });
-
-    // createNeonButton(this, buttonPositions.leaderboard.x, buttonPositions.leaderboard.y, 'Leaderboard', () => {
-    //     console.log('Leaderboard Clicked!');
-    // });
-
-    // createNeonButton(this, buttonPositions.miniGames.x, buttonPositions.miniGames.y, 'Mini Games', () => {
-    //     console.log('Mini Games Clicked!');
-    // });
+    }
+    shutdown() {
+        // Stop the music when transitioning out of the HomeScene
+        const bgMusic = this.registry.get('bgMusic');
+        if (bgMusic) {
+            bgMusic.stop();
+            this.registry.remove('bgMusic'); // Remove the music instance from the registry
+        }
     }
 }
 
 
-        class ChooseCharacterScene extends Phaser.Scene {
+    class ChooseCharacterScene extends Phaser.Scene {
     constructor() {
         super({ key: 'chooseCharacterScene' });
     }
