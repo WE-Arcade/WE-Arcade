@@ -110,3 +110,9 @@ We have successfully completed the next phase of the project, with squid game an
 ### **3. Conclusion**
 
 We have successfully completed the next phase of the project, with the complete backend ready. We are now planning the next phase of the project, that is integration of various frontend components and API integration.
+
+## *Information about team and special mention**
+My team consists of me, Srujana and Tanu since we are a very small time and worked on the project without having any prior experience I would like to give special mention to both my teammates.
+Srujana worked on the UI/UX design, frontend integration as well as backend and database
+Tanu handled the entire frontend development of code editor and other parts of the web page expect for the squid game.
+I managed the team and developed the squid game.
