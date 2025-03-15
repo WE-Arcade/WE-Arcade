@@ -38,8 +38,10 @@
         let velocityMultiplier = 1;
         let gameOver = false;
         let bgMusic, biryaniSound, gameOverSound, bayleafSound;
-        let selectedCharacter = 'player';
+        let selectedCharacter = localStorage.getItem('selectedCharacter') || 'player';
         let isPaused = false;
+        let basePlayerSpeed = 200; 
+        let playerSpeedMultiplier = 1; 
 
         const config = {
             type: Phaser.AUTO,
@@ -192,55 +194,58 @@
             closeButton.on('pointerout', () => closeButton.setStyle({ backgroundColor: '#900' }));
         }
 
-        function selectCharacters() {
-            this.add.image(0, 0, 'background').setOrigin(0, 0).setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
-            
-            const centerX = this.cameras.main.width / 2;
-            const centerY = this.cameras.main.height / 2;
+    function selectCharacters() {
+        this.add.image(0, 0, 'background').setOrigin(0, 0).setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
         
-            let characterScaleX = 0.25; 
-            let characterScaleY = 0.2; 
+        const centerX = this.cameras.main.width / 2;
+        const centerY = this.cameras.main.height / 2;
 
-            let characters = [
-                this.add.image(centerX , centerY, 'player').setScale(characterScaleX, characterScaleY),
-                this.add.image(centerX , centerY, 'player2').setScale(characterScaleX, characterScaleY)
-            ];
-    
-            let arrowLeft = this.add.image(centerX - 300, centerY, 'arrowLeft').setScale(0.5);
-            let arrowRight = this.add.image(centerX + 300, centerY, 'arrowRight').setScale(0.5);
-            let selectButton = this.add.image(centerX, centerY + 150, 'selectButton').setScale(0.7);
+        let characterScaleX = 0.25; 
+        let characterScaleY = 0.2; 
 
-            arrowLeft.setInteractive();
-            arrowRight.setInteractive();
-            selectButton.setInteractive();
-        
-            let currentIndex = 0;
-        
-            arrowLeft.on('pointerdown', () => {
-                characters[currentIndex].setVisible(false);
-                currentIndex = (currentIndex - 1 + characters.length) % characters.length;
-                characters[currentIndex].setVisible(true);
-            });
-        
-            arrowRight.on('pointerdown', () => {
-                characters[currentIndex].setVisible(false);
-                currentIndex = (currentIndex + 1) % characters.length;
-                characters[currentIndex].setVisible(true);
-            });
-        
-            selectButton.on('pointerdown', () => {
-                selectedCharacter = currentIndex === 0 ? 'player' : 'player2';
-                characters.forEach(char => char.destroy());
-                arrowLeft.destroy();
-                arrowRight.destroy();
-                selectButton.destroy();
-                createStartScreen.call(this);
-            });
-        
-            characters.forEach((char, index) => {
-                if (index !== 0) char.setVisible(false);
-            });
-        }
+        let characters = [
+            this.add.image(centerX , centerY, 'player').setScale(characterScaleX, characterScaleY),
+            this.add.image(centerX , centerY, 'player2').setScale(characterScaleX, characterScaleY)
+        ];
+
+        let arrowLeft = this.add.image(centerX - 300, centerY, 'arrowLeft').setScale(0.5);
+        let arrowRight = this.add.image(centerX + 300, centerY, 'arrowRight').setScale(0.5);
+        let selectButton = this.add.image(centerX, centerY + 150, 'selectButton').setScale(0.7);
+
+        arrowLeft.setInteractive();
+        arrowRight.setInteractive();
+        selectButton.setInteractive();
+
+
+        let currentIndex = selectedCharacter === 'player' ? 0 : 1;
+
+        arrowLeft.on('pointerdown', () => {
+            characters[currentIndex].setVisible(false);
+            currentIndex = (currentIndex - 1 + characters.length) % characters.length;
+            characters[currentIndex].setVisible(true);
+        });
+
+        arrowRight.on('pointerdown', () => {
+            characters[currentIndex].setVisible(false);
+            currentIndex = (currentIndex + 1) % characters.length;
+            characters[currentIndex].setVisible(true);
+        });
+
+        selectButton.on('pointerdown', () => {
+            selectedCharacter = currentIndex === 0 ? 'player' : 'player2';
+            localStorage.setItem('selectedCharacter', selectedCharacter);
+
+            characters.forEach(char => char.destroy());
+            arrowLeft.destroy();
+            arrowRight.destroy();
+            selectButton.destroy();
+            createStartScreen.call(this);
+        });
+
+        characters.forEach((char, index) => {
+            if (index !== currentIndex) char.setVisible(false);
+        });
+    }
 
         function createGameElements() {
             this.road = this.add.tileSprite(config.width / 2, config.height / 2, config.width, config.height * 1.5, 'road');
@@ -320,17 +325,33 @@
         }
 
         function update() {
-            if (!player || gameOver || isPaused) return;
-            this.road.tilePositionX += 4;
+    if (!player || gameOver || isPaused) return;
+    this.road.tilePositionX += 4;
 
-            if (cursors.up.isDown) player.setVelocityY(-200);
-            else if (cursors.down.isDown) player.setVelocityY(200);
-            else player.setVelocityY(0);
+    // Calculate dynamic player speed based on score
+    let dynamicPlayerSpeed = basePlayerSpeed * playerSpeedMultiplier;
 
-            cleanUpObjects(biryanis);
-            cleanUpObjects(bay_leafs);
-            cleanUpObjects(raitaGroup);
+    if (cursors.up.isDown) player.setVelocityY(-dynamicPlayerSpeed);
+    else if (cursors.down.isDown) player.setVelocityY(dynamicPlayerSpeed);
+    else player.setVelocityY(0);
+
+    cleanUpObjects(biryanis);
+    cleanUpObjects(bay_leafs);
+    cleanUpObjects(raitaGroup);
+}
+
+        function updateScore(points) {
+            score += points * (player.scoreMultiplier || 1);
+            scoreText.setText('Score: ' + score);
+            
+            // Increase velocity multiplier
+            velocityMultiplier = 1 + (score * 0.01);
+            
+            // Increase player speed multiplier
+            // Speed increases gradually: every 50 points adds 0.1 to speed multiplier
+            playerSpeedMultiplier = 1 + (Math.floor(score / 50) * 0.1);
         }
+
 
         function cleanUpObjects(group) {
             group.getChildren().forEach(obj => { if (obj.x < -50) obj.destroy(); });
@@ -425,11 +446,6 @@
             this.time.delayedCall(5000, () => { playerSpeed = 200; player.clearTint(); });
         }
 
-        function updateScore(points) {
-            score += points * (player.scoreMultiplier || 1);
-            scoreText.setText('Score: ' + score);
-            velocityMultiplier = 1 + (score * 0.01);
-        }
 
         function endGame() {
             gameOver = true;

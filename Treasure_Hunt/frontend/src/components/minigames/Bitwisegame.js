@@ -135,19 +135,16 @@ const BitwiseGame = () => {
 
     // Play the submit button sound
     setPlaySubmitSound(true);
-
     if (selectedOption === questions[currentQuestionIndex].answer) {
       if (setAnsweredQuestions)
         setAnsweredQuestions([...answeredQuestions, currentQuestionIndex]);
       if (setPowerUps) setPowerUps((prevPowerUps) => prevPowerUps + 1); // Increment power-up count
-
       setFeedback("Correct! You earned a power-up!");
       setShowSuccess(true);
 
       // Get the correct return level
       const params = new URLSearchParams(location.search);
       const returnToLevel = params.get("returnTo") || "1";
-
       setTimeout(() => {
         navigate(`/riddle/${returnToLevel}?powerUpEarned=true`); // Ensure correct return level
       }, 2000);
@@ -155,7 +152,6 @@ const BitwiseGame = () => {
       setFeedback("Incorrect. Try again!");
     }
   };
-
   const toggleHint = () => {
     // Play the back button sound for the Show Hint button
     setPlayBackSound(true);
@@ -244,7 +240,6 @@ const BitwiseGame = () => {
           </div>
         </div>
       )}
-
       {/* Background Music */}
       <Sound
         url={bgMusic}

@@ -45,7 +45,6 @@ const MiniGamesMenuPage = () => {
       navigate(`/riddle/${returnLevel}`);
     }, 500); // Adjust the delay to match the sound duration
   };
-
   return (
     <div style={styles.container}>
       <div style={styles.menuCard}>
@@ -61,7 +60,6 @@ const MiniGamesMenuPage = () => {
           >
             Cryptogram Game
           </button>
-
           <button
             onClick={() =>
               handleGameButtonClick(`/mini-game/dsa-game?returnTo=${returnLevel}`)
@@ -70,7 +68,6 @@ const MiniGamesMenuPage = () => {
           >
             DSA Challenge
           </button>
-
           <button
             onClick={() =>
               handleGameButtonClick(
@@ -81,7 +78,6 @@ const MiniGamesMenuPage = () => {
           >
             Treasure of Bitwise Logic Challenge
           </button>
-
           <button
             onClick={() =>
               handleGameButtonClick(`/mini-game/loop-runner?returnTo=${returnLevel}`)
@@ -100,8 +96,6 @@ const MiniGamesMenuPage = () => {
             Debugging an SQL query
           </button>
         </div>
-
-        {/* Ensure correct level is passed back to Riddle */}
         <button onClick={handleBackButtonClick} style={styles.backButton}>
           Back to Riddle
         </button>
@@ -133,7 +127,6 @@ const MiniGamesMenuPage = () => {
     </div>
   );
 };
-
 const styles = {
   container: {
     minHeight: "100vh",

@@ -79,7 +79,6 @@ const CryptogramGame = () => {
 
     // Play the submit button sound
     setPlaySubmitSound(true);
-
     if (userAnswer.toUpperCase() === questions[currentQuestionIndex].answer) {
       if (setAnsweredQuestions)
         setAnsweredQuestions([...answeredQuestions, currentQuestionIndex]);
@@ -148,7 +147,6 @@ const CryptogramGame = () => {
           </div>
         </div>
       )}
-
       {/* Background Music */}
       <Sound
         url={bgMusic}

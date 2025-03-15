@@ -26,7 +26,6 @@ function StoryPage() {
       <div className="overlay"></div> 
       <div className="hero-container">
         <img src="/images/map.png" alt="Map" className="map-image" />
-
         <h1 className='welcome-message pt-serif-bold'>Journey to Sphoorthy's Vault!</h1>
         <p className="story-text">
           Long ago, a wise mentor named Sphoorthy foresaw a time when true wisdom would be needed to guide the world. 
@@ -62,5 +61,4 @@ function StoryPage() {
     </div>
   );
 }
-
 export default StoryPage;

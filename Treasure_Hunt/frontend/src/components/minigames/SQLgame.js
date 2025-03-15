@@ -71,8 +71,6 @@ const SQLGame = () => {
       const originalIndex = questions.indexOf(availableQuestions[randomIndex]);
       setCurrentQuestionIndex(originalIndex);
     }
-
-    // Start background music after user interaction
     const handleUserInteraction = () => {
       setBgMusicStatus(Sound.status.PLAYING);
       window.removeEventListener("click", handleUserInteraction);
@@ -87,8 +85,6 @@ const SQLGame = () => {
 
   const handleSubmit = () => {
     if (selectedOption === null) return;
-
-    // Play submit sound
     setSubmitSoundStatus(Sound.status.PLAYING);
 
     if (selectedOption === questions[currentQuestionIndex].answer) {
@@ -128,7 +124,6 @@ const SQLGame = () => {
 
   return (
     <div className="dsa-game-container" style={styles.container}>
-      {/* Background Music */}
       <Sound
         url={bgMusic}
         playStatus={bgMusicStatus}
@@ -151,7 +146,6 @@ const SQLGame = () => {
         onFinishedPlaying={() => setBackSoundStatus(Sound.status.STOPPED)} // Stop after playing
         volume={100}
       />
-
       <div className="game-box" style={styles.gameBox}>
         <h2 style={styles.title}>Data Structure Challenge</h2>
         <p style={styles.story}>{questions[currentQuestionIndex].story}</p>
@@ -388,5 +382,4 @@ const styles = {
     fontFamily: "'MedievalSharp', cursive",
   }
 };
-
 export default SQLGame;

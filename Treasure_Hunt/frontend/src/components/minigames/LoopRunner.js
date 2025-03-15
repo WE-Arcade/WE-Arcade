@@ -77,7 +77,6 @@ const LoopRunner = () => {
     const availableQuestions = questions.filter(
       (_, index) => !safeAnsweredQuestions.includes(index)
     );
-
     if (availableQuestions.length === 0) {
       // If all questions have been answered, reset the answered questions
       if (setAnsweredQuestions) {
@@ -99,21 +98,17 @@ const LoopRunner = () => {
 
     // Play the submit button sound
     setPlaySubmitSound(true);
-
     if (
       userAnswer.trim().toLowerCase() ===
       questions[currentQuestionIndex].answer.toLowerCase()
     ) {
-      // Ensure answeredQuestions is an array before updating
       const safeAnsweredQuestions = Array.isArray(answeredQuestions)
         ? answeredQuestions
         : [];
-
       // Add the current question to answered questions
       if (setAnsweredQuestions) {
         setAnsweredQuestions([...safeAnsweredQuestions, currentQuestionIndex]);
       }
-
       // Increment powerups
       const newPowerUps = (powerUps || 0) + 1;
       if (setPowerUps) {
@@ -126,7 +121,6 @@ const LoopRunner = () => {
       // Get return level from URL params
       const params = new URLSearchParams(location.search);
       const returnToLevel = params.get("returnTo") || "1";
-
       setTimeout(() => {
         // Navigate back to the specific riddle level
         navigate(`/riddle/${returnToLevel}`);
@@ -147,7 +141,6 @@ const LoopRunner = () => {
       navigate(`/mini-games-menu?returnTo=${returnToLevel}`); // Go back with correct level
     }, 500); // Adjust the delay to match the sound duration
   };
-
   if (currentQuestionIndex === null) {
     return <div style={styles.container}>Loading...</div>;
   }
@@ -182,7 +175,6 @@ const LoopRunner = () => {
         </form>
         {feedback && <p style={styles.feedback}>{feedback}</p>}
       </div>
-
       {/* Success popup */}
       {showSuccess && (
         <div style={styles.overlay}>

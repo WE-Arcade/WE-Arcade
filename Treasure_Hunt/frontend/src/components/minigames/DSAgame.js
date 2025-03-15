@@ -104,7 +104,6 @@ const DSAGame = () => {
 
     // Play the submit button sound
     setPlaySubmitSound(true);
-
     if (selectedOption === questions[currentQuestionIndex].answer) {
       if (setAnsweredQuestions)
         setAnsweredQuestions([...answeredQuestions, currentQuestionIndex]);
@@ -116,7 +115,6 @@ const DSAGame = () => {
       // Get the correct return level
       const params = new URLSearchParams(location.search);
       const returnToLevel = params.get("returnTo") || "1";
-
       setTimeout(() => {
         navigate(`/riddle/${returnToLevel}?powerUpEarned=true`); // Ensure correct return level
       }, 2000);

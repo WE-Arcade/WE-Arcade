@@ -36,9 +36,7 @@ const FinalLevelCompletePage = () => {
 
   return (
     <div style={styles.container}>
-      {/* Translucent Brown Overlay */}
       <div style={styles.overlay}></div>
-
       <div style={styles.modal}>
         <div style={styles.titleContainer}>
           <span style={styles.emoji}>🎉</span>

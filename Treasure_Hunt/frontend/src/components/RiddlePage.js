@@ -214,9 +214,7 @@ const RiddlePage = () => {
   const riddle = riddles[level];
 
   useEffect(() => {
-    // Start the background music when the component mounts
     setPlayBackgroundMusic(true);
-
     // Check if the level is unlocked
     if (!unlockedLevels.includes(parseInt(level))) {
       alert("You haven't unlocked this level yet!");
@@ -269,7 +267,6 @@ const RiddlePage = () => {
 
   const useClue = () => {
     setPlayCluePowerUpSound(true);
-
     if (powerUps > 0 && clueIndex < 2) {
       const newIndex = clueIndex + 1;
       setClueIndex(newIndex);
@@ -600,6 +597,29 @@ const styles = {
     borderRadius: "10px",
     border: "2px solid #FFC72C",
     color: "#FFC72C",
+  clueText: {
+    color: "#FFC72C", // Yellow
+    marginBottom: "10px",
+    textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive", // MedievalSharp font
+  },
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(139, 69, 19, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  popup: {
+    backgroundColor: "#1C1C1C", // Black
+    padding: "20px",
+    borderRadius: "10px",
+    border: "2px solid #FFC72C", // Yellow
+    color: "#FFC72C", // Yellow
     maxWidth: "400px",
     width: "90%",
     textAlign: "center",

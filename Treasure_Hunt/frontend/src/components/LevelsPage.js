@@ -5,7 +5,6 @@ import Sound from "react-sound";
 import bgMusic from "../assets/sound-effects/main-bg-music.mp3";
 import buttonClickSound from "../assets/sound-effects/levels-button-click.mp3";
 import backgroundImg from "../assets/images/bg77.jpg";
-
 const LevelsPage = () => {
   const { unlockedLevels } = useContext(GameContext);
   const navigate = useNavigate();
@@ -28,7 +27,23 @@ const handleLevelClick = (level) => {
 
   const renderLevelButton = (level) => {
     const isUnlocked = level === 1 || levels.includes(level);
+  const [levels, setLevels] = useState([1]); // Initialize with level 1 unlocked
 
+  useEffect(() => {
+    // Initialize with level 1 if no levels are unlocked
+    setLevels(unlockedLevels?.length ? unlockedLevels : [1]);
+  }, [unlockedLevels]);
+
+  const handleLevelClick = (level) => {
+    // Check if it's level 1 (always accessible) or if the level is unlocked
+    if (level === 1 || levels.includes(level)) {
+      navigate(`/riddle/${level}`);
+    }
+  };
+
+  const renderLevelButton = (level) => {
+    // Level 1 is always unlocked, other levels depend on unlocked state
+    const isUnlocked = level === 1 || levels.includes(level);
     return (
       <button
         key={level}
@@ -47,6 +62,9 @@ const handleLevelClick = (level) => {
         onMouseLeave={(e) => {
           if (isUnlocked) e.target.style.backgroundColor = "rgba(160, 82, 45, 0.9)"; // Reset color after hover
         }}
+        }}
+        onClick={() => handleLevelClick(level)}
+        disabled={!isUnlocked}
       >
         Level {level}
       </button>
@@ -99,6 +117,16 @@ const styles = {
   levelsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(4, 1fr)",
+    fontSize: "3rem", // Increased font size for better visibility
+    color: "#FFD700",
+    marginBottom: "40px",
+    textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+    fontFamily: "'Pirata One', cursive", // Apply Pirata One font
+    letterSpacing: "2px", // Add some letter spacing for a pirate vibe
+  },
+  levelsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)", // Reduce from 5 to 3 columns
     gap: "20px",
     maxWidth: "900px",
     width: "100%",
@@ -116,6 +144,25 @@ const styles = {
     transition: "transform 0.2s ease, background-color 0.2s ease",
     textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
     boxShadow: "0 4px 10px rgba(0,0,0,0.3)", // Increased brightness effect
+  },
+};
+
+export default LevelsPage;
+    padding: "20px 20px", // Increase width by adding more padding
+    fontSize: "1.2rem",
+    minWidth: "180px", // Ensure buttons are wider
+    borderRadius: "12px",
+    backgroundColor: "rgba(139, 69, 19, 0.8)",
+    border: "2px solid #FFD700",
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    transition: "transform 0.2s ease",
+    textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+    boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+    "&:hover": {
+      transform: "scale(1.05)",
+    },
   },
 };
 

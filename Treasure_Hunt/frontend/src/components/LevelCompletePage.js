@@ -18,6 +18,7 @@ const LevelCompletePage = () => {
     // Start the background music when the component mounts
     setPlayBackgroundMusic(true);
 
+  useEffect(() => {
     if (!unlockedLevels.includes(nextLevel)) {
       unlockNextLevel(nextLevel);
       updateProgress(nextLevel);
@@ -44,13 +45,13 @@ const LevelCompletePage = () => {
     setTimeout(() => {
       navigate(`/riddle/${nextLevel}`);
     }, 500); // Adjust the delay to match the sound duration
+    navigate(`/riddle/${nextLevel}`);
   };
 
   return (
     <div style={styles.container}>
       {/* Translucent Brown Overlay */}
       <div style={styles.overlay}></div>
-
       <div style={styles.modal}>
         <div style={styles.titleContainer}>
           <span style={styles.emoji}>🎉</span>
@@ -64,8 +65,6 @@ const LevelCompletePage = () => {
           <span style={styles.buttonText}>Proceed</span>
         </button>
       </div>
-
-      {/* Background Music */}
       <Sound
         url={bgMusic}
         playStatus={playBackgroundMusic ? Sound.status.PLAYING : Sound.status.STOPPED}
