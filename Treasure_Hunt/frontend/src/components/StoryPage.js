@@ -1,22 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './StartPage.css';  // Importing the CSS file
+import Sound from 'react-sound';
+import './StartPage.css';
+import bgMusic from "../assets/sound-effects/main-bg-music.mp3";
+import buttonClickSound from "../assets/sound-effects/button-click.mp3";
 
 function StoryPage() {
   const navigate = useNavigate();
+  const [playBackgroundMusic, setPlayBackgroundMusic] = useState(false);
+  const [playButtonSound, setPlayButtonSound] = useState(false);
+
+  useEffect(() => {
+    setPlayBackgroundMusic(true);
+  }, []);
 
   const goToLevelsPage = () => {
-    navigate('/levels-page');
+    setPlayButtonSound(true);
+    setTimeout(() => {
+      navigate('/levels-page');
+    }, 500);
   };
 
   return (
     <div className="start-page-container">
-      <div className="overlay"></div>  {/* Dark overlay on the background */}
+      <div className="overlay"></div> 
       <div className="hero-container">
-        {/* Map Image at Top Left */}
         <img src="/images/map.png" alt="Map" className="map-image" />
-
-
         <h1 className='welcome-message pt-serif-bold'>Journey to Sphoorthy's Vault!</h1>
         <p className="story-text">
           Long ago, a wise mentor named Sphoorthy foresaw a time when true wisdom would be needed to guide the world. 
@@ -35,12 +44,21 @@ function StoryPage() {
         <button className="go-button" onClick={goToLevelsPage}>
           Begin Your Quest
         </button>
-
-        {/* Treasure Box at Bottom Right */}
         <img src="/images/treasure.png" alt="Treasure Box" className="treasure-box" />
       </div>
+      <Sound
+        url={bgMusic}
+        playStatus={playBackgroundMusic ? Sound.status.PLAYING : Sound.status.STOPPED}
+        loop={true}
+        volume={50}
+      />
+      <Sound
+        url={buttonClickSound}
+        playStatus={playButtonSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlayButtonSound(false)}
+        volume={100}
+      />
     </div>
   );
 }
-
 export default StoryPage;

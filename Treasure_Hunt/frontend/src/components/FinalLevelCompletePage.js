@@ -1,15 +1,42 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Sound from "react-sound";
+import bgMusic from "../assets/sound-effects/game-complete.wav"; // Import background music
+import buttonClickSound from "../assets/sound-effects/button-click.mp3"; // Import button click sound
 
 const FinalLevelCompletePage = () => {
   const navigate = useNavigate();
+  const [playBackgroundMusic, setPlayBackgroundMusic] = useState(false);
+  const [playButtonSound, setPlayButtonSound] = useState(false);
+
+  useEffect(() => {
+    // Function to start the background music
+    const startBackgroundMusic = () => {
+      setPlayBackgroundMusic(true);
+      document.removeEventListener("click", startBackgroundMusic);
+    };
+
+    // Add event listener for user interaction
+    document.addEventListener("click", startBackgroundMusic);
+
+    return () => {
+      document.removeEventListener("click", startBackgroundMusic);
+    };
+  }, []);
 
   const handleReturnHome = () => {
-    navigate("/levels-page"); // Navigate back to the levels page
+    // Play the button click sound
+    setPlayButtonSound(true);
+
+    // Navigate to the levels page after a short delay
+    setTimeout(() => {
+      navigate("/levels-page");
+    }, 500); // Adjust the delay to match the sound duration
   };
 
   return (
     <div style={styles.container}>
+      <div style={styles.overlay}></div>
       <div style={styles.modal}>
         <div style={styles.titleContainer}>
           <span style={styles.emoji}>🎉</span>
@@ -42,6 +69,22 @@ const FinalLevelCompletePage = () => {
           <span style={styles.buttonText}>Return to Levels</span>
         </button>
       </div>
+
+      {/* Background Music */}
+      <Sound
+        url={bgMusic}
+        playStatus={playBackgroundMusic ? Sound.status.PLAYING : Sound.status.STOPPED}
+        loop={true} // Loop the background music
+        volume={50} // Adjust the volume (0 to 100)
+      />
+
+      {/* Button Click Sound */}
+      <Sound
+        url={buttonClickSound}
+        playStatus={playButtonSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlayButtonSound(false)} // Reset the state after the sound finishes
+        volume={100} // Adjust the volume (0 to 100)
+      />
     </div>
   );
 };
@@ -58,6 +101,16 @@ const styles = {
     alignItems: "center",
     padding: "20px",
     fontFamily: "'Times New Roman', serif",
+    position: "relative", // Required for the overlay
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(101, 67, 33, 0.7)", // Translucent brown
+    zIndex: 1, // Ensure it's above the background image but below the modal
   },
   modal: {
     backgroundColor: "rgba(30, 30, 30, 0.9)",
@@ -68,6 +121,8 @@ const styles = {
     width: "100%",
     boxShadow: "0 0 20px rgba(0, 0, 0, 0.5)",
     border: "1px solid rgba(255, 215, 0, 0.3)",
+    position: "relative", // Ensure it's above the overlay
+    zIndex: 2, // Ensure it's above the overlay
   },
   titleContainer: {
     display: "flex",

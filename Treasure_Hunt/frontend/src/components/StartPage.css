@@ -8,8 +8,9 @@ html, body {
 
 .start-page-container {
   position: relative;
-  height: 100vh; /* Full viewport height */
-  background-color: #654a23; /* Solid brown background */
+  height: 100vh;
+  background-color: #654a23;
+  background-image: url('../assets/images/bg44.b.jpg'); /* Replace with your image path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -17,10 +18,9 @@ html, body {
   justify-content: center;
   align-items: center;
   color: white;
-  padding: 0 20px; /* Added padding to prevent content from touching edges */
-  overflow: visible; /* Allow overflow for corner images */
+  padding: 0 20px;
+  overflow: visible;
 }
-
 .overlay {
   position: absolute;
   top: 0;
@@ -32,6 +32,7 @@ html, body {
 }
 
 .hero-container {
+  opacity: 0.8;
   position: relative;
   z-index: 2;
   background-color: #3b2200;
