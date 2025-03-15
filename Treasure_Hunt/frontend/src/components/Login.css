@@ -1,0 +1,103 @@
+/* General styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+.landing-page {
+  position: relative;
+  height: 100vh;
+  background-image: url("../assets/images/bg44.4.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Dark overlay for better text visibility */
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 20px;
+}
+
+.welcome-message {
+  font-family: 'Pirata One', cursive; /* Adventure-themed font */
+  font-size: 4rem;
+  margin-bottom: 20px;
+  color: #ffd700; /* Gold color for the heading */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.description {
+  font-family: 'MedievalSharp', cursive; /* Medieval-themed font */
+  font-size: 1.5rem;
+  margin-bottom: 40px;
+  color: #fff;
+  line-height: 1.6;
+}
+
+.start-button {
+  padding: 15px 30px;
+  font-family: 'Press Start 2P', cursive; /* Retro gaming font */
+  font-size: 1.2rem;
+  color: #000;
+  background-color: #ffd700; /* Gold color for the button */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.start-button:hover {
+  background-color: #634402;
+  transform: scale(1.05);
+  color: #ffd324;
+  border: 1px solid white;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .welcome-message {
+    font-size: 3rem;
+  }
+
+  .description {
+    font-size: 1.2rem;
+  }
+
+  .start-button {
+    font-size: 1rem;
+    padding: 12px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-message {
+    font-size: 2.5rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .start-button {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
+}
