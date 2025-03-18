@@ -1,6 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { GameContext } from "../../context/GameContext";
+import Sound from "react-sound";
+import bgMusic from "../../assets/sound-effects/ind-minigame-bg-music.mp3"; // Import background music
+import submitSound from "../../assets/sound-effects/minigame-button-click.wav"; // Import submit button sound
+import backSound from "../../assets/sound-effects/button-click.mp3"; // Import back button sound
+import backgroundImg from "../../assets/images/bg1212.jpg";
 
 const questions = [
   {
@@ -46,9 +51,29 @@ const DSAGame = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [feedback, setFeedback] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-
-  // Choose a question that hasn't been answered yet
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(null);
+  const [playBackgroundMusic, setPlayBackgroundMusic] = useState(false);
+  const [playSubmitSound, setPlaySubmitSound] = useState(false);
+  const [playBackSound, setPlayBackSound] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+
+  // Simulate user interaction to allow audio playback
+  const handleUserInteraction = () => {
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+      setPlayBackgroundMusic(true); // Start the background music
+    }
+  };
+
+  useEffect(() => {
+    // Add an event listener for user interaction
+    window.addEventListener("click", handleUserInteraction);
+
+    // Cleanup the event listener
+    return () => {
+      window.removeEventListener("click", handleUserInteraction);
+    };
+  }, [hasUserInteracted]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -76,18 +101,20 @@ const DSAGame = () => {
 
   const handleSubmit = () => {
     if (selectedOption === null) return;
+
+    // Play the submit button sound
+    setPlaySubmitSound(true);
     if (selectedOption === questions[currentQuestionIndex].answer) {
       if (setAnsweredQuestions)
         setAnsweredQuestions([...answeredQuestions, currentQuestionIndex]);
       if (setPowerUps) setPowerUps((prevPowerUps) => prevPowerUps + 1); // Increment power-up count
-  
+
       setFeedback("Correct! You earned a power-up!");
       setShowSuccess(true);
-  
+
       // Get the correct return level
       const params = new URLSearchParams(location.search);
       const returnToLevel = params.get("returnTo") || "1";
-  
       setTimeout(() => {
         navigate(`/riddle/${returnToLevel}?powerUpEarned=true`); // Ensure correct return level
       }, 2000);
@@ -95,21 +122,25 @@ const DSAGame = () => {
       setFeedback("Incorrect. Try again!");
     }
   };
-  
 
   const handleBack = () => {
-    const params = new URLSearchParams(location.search);
-    const returnToLevel = params.get("returnTo") || "1"; // Default to level 1 if missing
-    navigate(`/mini-games-menu?returnTo=${returnToLevel}`); // Go back with correct level
+    // Play the back button sound
+    setPlayBackSound(true);
+
+    // Navigate back after a short delay
+    setTimeout(() => {
+      const params = new URLSearchParams(location.search);
+      const returnToLevel = params.get("returnTo") || "1"; // Default to level 1 if missing
+      navigate(`/mini-games-menu?returnTo=${returnToLevel}`); // Go back with correct level
+    }, 500); // Adjust the delay to match the sound duration
   };
-  
 
   if (currentQuestionIndex === null) {
     return <div style={styles.container}>Loading...</div>;
   }
 
   return (
-    <div className="dsa-game-container" style={styles.container}>
+    <div className="dsa-game-container" style={styles.container} onClick={handleUserInteraction}>
       <div className="game-box" style={styles.gameBox}>
         <h2 style={styles.title}>Data Structure Challenge</h2>
         <p style={styles.story}>{questions[currentQuestionIndex].story}</p>
@@ -172,11 +203,37 @@ const DSAGame = () => {
           <div style={styles.popup}>
             <h3 style={styles.popupTitle}>Success!</h3>
             <p style={styles.popupContent}>
-              You've earned a power-up! Redirecting...
+            You've earned a power-up!
+              <br />
+              Redirecting to the riddle page...
             </p>
           </div>
         </div>
       )}
+
+      {/* Background Music */}
+      <Sound
+        url={bgMusic}
+        playStatus={playBackgroundMusic ? Sound.status.PLAYING : Sound.status.STOPPED}
+        loop={true} // Loop the background music
+        volume={50} // Adjust the volume (0 to 100)
+      />
+
+      {/* Submit Button Sound */}
+      <Sound
+        url={submitSound}
+        playStatus={playSubmitSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlaySubmitSound(false)} // Reset the state after the sound finishes
+        volume={100} // Adjust the volume (0 to 100)
+      />
+
+      {/* Back Button Sound */}
+      <Sound
+        url={backSound}
+        playStatus={playBackSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlayBackSound(false)} // Reset the state after the sound finishes
+        volume={100} // Adjust the volume (0 to 100)
+      />
     </div>
   );
 };
@@ -184,7 +241,7 @@ const DSAGame = () => {
 const styles = {
   container: {
     minHeight: "100vh",
-    backgroundImage: "url('/images/wallpaper1.jpg')",
+    backgroundImage: `url(${backgroundImg})`,
     backgroundColor: "#003F66",
     display: "flex",
     justifyContent: "center",
@@ -304,6 +361,7 @@ const styles = {
     marginTop: "20px",
     fontSize: "1.2rem",
     textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive",
   },
   overlay: {
     position: "fixed",
@@ -334,6 +392,7 @@ const styles = {
     color: "#FFD700",
     marginBottom: "20px",
     lineHeight: "1.6",
+    fontFamily: "'MedievalSharp', cursive",
   },
   story: {
     color: "#FFD700",

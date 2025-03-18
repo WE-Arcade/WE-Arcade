@@ -1,20 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import Sound from "react-sound";
+import bgMusic from "../assets/sound-effects/minigame-bg-music.mp3"; // Import background music
+import buttonClickSound from "../assets/sound-effects/riddle-button-click.mp3"; // Import button click sound
+import backButtonSound from "../assets/sound-effects/button-click.mp3"; // Import back button sound
+import backgroundImg from "../assets/images/bg99.jpg";
 
 const MiniGamesMenuPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [returnLevel, setReturnLevel] = useState("1");
+  const [playBackgroundMusic, setPlayBackgroundMusic] = useState(false);
+  const [playButtonClickSound, setPlayButtonClickSound] = useState(false);
+  const [playBackButtonSound, setPlayBackButtonSound] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const level = params.get("returnTo");
 
     if (level) {
-      setReturnLevel(level); // Keep the correct level from URL
+      setReturnLevel(level);
     }
+
+    // Start the background music when the component mounts
+    setPlayBackgroundMusic(true);
   }, [location]);
 
+  const handleGameButtonClick = (path) => {
+    // Play the button click sound
+    setPlayButtonClickSound(true);
+
+    // Navigate to the selected mini-game after a short delay
+    setTimeout(() => {
+      navigate(path);
+    }, 500); // Adjust the delay to match the sound duration
+  };
+
+  const handleBackButtonClick = () => {
+    // Play the back button sound
+    setPlayBackButtonSound(true);
+
+    // Navigate back to the riddle page after a short delay
+    setTimeout(() => {
+      navigate(`/riddle/${returnLevel}`);
+    }, 500); // Adjust the delay to match the sound duration
+  };
   return (
     <div style={styles.container}>
       <div style={styles.menuCard}>
@@ -22,60 +52,91 @@ const MiniGamesMenuPage = () => {
         <p style={styles.subtitle}>Play games to earn powerups!</p>
 
         <div style={styles.buttonsContainer}>
-          <button 
-            onClick={() => navigate(`/mini-game/crypto?returnTo=${returnLevel}`)} 
+          <button
+            onClick={() =>
+              handleGameButtonClick(`/mini-game/crypto?returnTo=${returnLevel}`)
+            }
             style={styles.gameButton}
           >
             Cryptogram Game
           </button>
-
-          <button 
-            onClick={() => navigate(`/mini-game/dsa-game?returnTo=${returnLevel}`)} 
+          <button
+            onClick={() =>
+              handleGameButtonClick(`/mini-game/dsa-game?returnTo=${returnLevel}`)
+            }
             style={styles.gameButton}
           >
             DSA Challenge
           </button>
-
-          <button 
-            onClick={() => navigate(`/mini-game/bitwise-game?returnTo=${returnLevel}`)} 
+          <button
+            onClick={() =>
+              handleGameButtonClick(
+                `/mini-game/bitwise-game?returnTo=${returnLevel}`
+              )
+            }
             style={styles.gameButton}
           >
             Treasure of Bitwise Logic Challenge
           </button>
-
-          <button 
-            onClick={() => navigate(`/mini-game/loop-runner?returnTo=${returnLevel}`)} 
+          <button
+            onClick={() =>
+              handleGameButtonClick(`/mini-game/loop-runner?returnTo=${returnLevel}`)
+            }
             style={styles.gameButton}
           >
             Loop Runner
           </button>
 
-          <button 
-            onClick={() => navigate(`/mini-game/sql-query?returnTo=${returnLevel}`)} 
+          <button
+            onClick={() =>
+              handleGameButtonClick(`/mini-game/sql-query?returnTo=${returnLevel}`)
+            }
             style={styles.gameButton}
           >
             Debugging an SQL query
           </button>
         </div>
-
-        {/* Ensure correct level is passed back to Riddle */}
-        <button 
-          onClick={() => navigate(`/riddle/${returnLevel}`)} 
-          style={styles.backButton}
-        >
+        <button onClick={handleBackButtonClick} style={styles.backButton}>
           Back to Riddle
         </button>
       </div>
+
+      {/* Background Music */}
+      <Sound
+        url={bgMusic}
+        playStatus={playBackgroundMusic ? Sound.status.PLAYING : Sound.status.STOPPED}
+        loop={true} // Loop the background music
+        volume={50} // Adjust the volume (0 to 100)
+      />
+
+      {/* Button Click Sound */}
+      <Sound
+        url={buttonClickSound}
+        playStatus={playButtonClickSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlayButtonClickSound(false)} // Reset the state after the sound finishes
+        volume={100} // Adjust the volume (0 to 100)
+      />
+
+      {/* Back Button Sound */}
+      <Sound
+        url={backButtonSound}
+        playStatus={playBackButtonSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlayBackButtonSound(false)} // Reset the state after the sound finishes
+        volume={100} // Adjust the volume (0 to 100)
+      />
     </div>
   );
 };
-
-
 const styles = {
   container: {
     minHeight: "100vh",
-    backgroundColor: "#003F66",
-    backgroundImage: "url('/images/wallpaper1.jpg')",
+    opacity: 0.9,
+    backgroundColor: "rgba(139, 69, 19, 0.3)", // Brown tint overlay
+    backgroundImage: `url(${backgroundImg})`,
+    backgroundBlendMode: "overlay", // Blends background color with image
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

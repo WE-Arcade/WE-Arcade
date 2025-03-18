@@ -1,6 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { GameContext } from "../../context/GameContext";
+import Sound from "react-sound";
+import bgMusic from "../../assets/sound-effects/ind-minigame-bg-music.mp3"; // Import background music
+import submitSound from "../../assets/sound-effects/minigame-button-click.wav"; // Import submit button sound
+import backSound from "../../assets/sound-effects/button-click.mp3"; // Import back button sound
+import backgroundImg from "../../assets/images/bg1212.jpg";
 
 const questions = [
   {
@@ -57,7 +62,7 @@ const questions = [
 ];
 
 const BitwiseGame = () => {
-  const { powerUps, setPowerUps, answeredQuestions, setAnsweredQuestions} =
+  const { powerUps, setPowerUps, answeredQuestions, setAnsweredQuestions } =
     useContext(GameContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,6 +71,28 @@ const BitwiseGame = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showHint, setShowHint] = useState(false);
+  const [playBackgroundMusic, setPlayBackgroundMusic] = useState(false);
+  const [playSubmitSound, setPlaySubmitSound] = useState(false);
+  const [playBackSound, setPlayBackSound] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+
+  // Simulate user interaction to allow audio playback
+  const handleUserInteraction = () => {
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+      setPlayBackgroundMusic(true); // Start the background music
+    }
+  };
+
+  useEffect(() => {
+    // Add an event listener for user interaction
+    window.addEventListener("click", handleUserInteraction);
+
+    // Cleanup the event listener
+    return () => {
+      window.removeEventListener("click", handleUserInteraction);
+    };
+  }, [hasUserInteracted]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -92,25 +119,32 @@ const BitwiseGame = () => {
   };
 
   const handleBack = () => {
-    const params = new URLSearchParams(location.search);
-    const returnToLevel = params.get("returnTo") || "1"; // Keep correct level
-    navigate(`/mini-games-menu?returnTo=${returnToLevel}`); // Go back correctly
+    // Play the back button sound
+    setPlayBackSound(true);
+
+    // Navigate back after a short delay
+    setTimeout(() => {
+      const params = new URLSearchParams(location.search);
+      const returnToLevel = params.get("returnTo") || "1"; // Keep correct level
+      navigate(`/mini-games-menu?returnTo=${returnToLevel}`); // Go back correctly
+    }, 500); // Adjust the delay to match the sound duration
   };
-  
+
   const handleSubmit = () => {
     if (selectedOption === null) return;
+
+    // Play the submit button sound
+    setPlaySubmitSound(true);
     if (selectedOption === questions[currentQuestionIndex].answer) {
       if (setAnsweredQuestions)
         setAnsweredQuestions([...answeredQuestions, currentQuestionIndex]);
       if (setPowerUps) setPowerUps((prevPowerUps) => prevPowerUps + 1); // Increment power-up count
-  
       setFeedback("Correct! You earned a power-up!");
       setShowSuccess(true);
-  
+
       // Get the correct return level
       const params = new URLSearchParams(location.search);
       const returnToLevel = params.get("returnTo") || "1";
-  
       setTimeout(() => {
         navigate(`/riddle/${returnToLevel}?powerUpEarned=true`); // Ensure correct return level
       }, 2000);
@@ -118,11 +152,11 @@ const BitwiseGame = () => {
       setFeedback("Incorrect. Try again!");
     }
   };
-  
-  
-  
-  
-  const toggleHint = () => setShowHint(!showHint);
+  const toggleHint = () => {
+    // Play the back button sound for the Show Hint button
+    setPlayBackSound(true);
+    setShowHint(!showHint);
+  };
 
   if (currentQuestionIndex === null)
     return <div style={styles.container}>Loading...</div>;
@@ -130,7 +164,7 @@ const BitwiseGame = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="game-container" style={styles.container}>
+    <div className="game-container" style={styles.container} onClick={handleUserInteraction}>
       <div className="game-box" style={styles.gameBox}>
         {/* Question Title */}
         <h3 style={styles.title}>{currentQuestion.title}</h3>
@@ -199,11 +233,36 @@ const BitwiseGame = () => {
           <div style={styles.popup}>
             <h3 style={styles.popupTitle}>Success!</h3>
             <p style={styles.popupContent}>
-              You've earned a power-up! Redirecting...
+            You've earned a power-up!
+              <br />
+              Redirecting to the riddle page...
             </p>
           </div>
         </div>
       )}
+      {/* Background Music */}
+      <Sound
+        url={bgMusic}
+        playStatus={playBackgroundMusic ? Sound.status.PLAYING : Sound.status.STOPPED}
+        loop={true} // Loop the background music
+        volume={50} // Adjust the volume (0 to 100)
+      />
+
+      {/* Submit Button Sound */}
+      <Sound
+        url={submitSound}
+        playStatus={playSubmitSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlaySubmitSound(false)} // Reset the state after the sound finishes
+        volume={100} // Adjust the volume (0 to 100)
+      />
+
+      {/* Back Button Sound */}
+      <Sound
+        url={backSound}
+        playStatus={playBackSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlayBackSound(false)} // Reset the state after the sound finishes
+        volume={100} // Adjust the volume (0 to 100)
+      />
     </div>
   );
 };
@@ -211,8 +270,12 @@ const BitwiseGame = () => {
 const styles = {
   container: {
     minHeight: "100vh",
-    backgroundImage: "url('/images/wallpaper1.jpg')",
-    backgroundColor: "#003F66",
+    opacity: 0.9,
+    backgroundImage: `url(${backgroundImg})`,
+    backgroundColor: "#003F66", // Base color if image doesn't load
+    backgroundRepeat: "no-repeat", // Prevents repetition
+    backgroundSize: "cover", // Ensures the image covers the full screen
+    backgroundPosition: "center", // Centers the image properly
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -332,6 +395,7 @@ const styles = {
     marginTop: "20px",
     fontSize: "1.2rem",
     textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive",
   },
   overlay: {
     position: "fixed",
@@ -362,6 +426,7 @@ const styles = {
     color: "#FFD700",
     marginBottom: "20px",
     lineHeight: "1.6",
+    fontFamily: "'MedievalSharp', cursive",
   },
 };
 

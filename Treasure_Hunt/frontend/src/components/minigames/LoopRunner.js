@@ -1,6 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { GameContext } from "../../context/GameContext";
+import Sound from "react-sound";
+import bgMusic from "../../assets/sound-effects/ind-minigame-bg-music.mp3"; // Import background music
+import submitSound from "../../assets/sound-effects/minigame-button-click.wav"; // Import submit button sound
+import backSound from "../../assets/sound-effects/button-click.mp3";
+import backgroundImg from "../../assets/images/bg1212.jpg";
 
 const questions = [
   {
@@ -29,28 +34,49 @@ const questions = [
 ];
 
 const LoopRunner = () => {
-  const { powerUps, setPowerUps, answeredQuestions, setAnsweredQuestions } = useContext(GameContext);
+  const { powerUps, setPowerUps, answeredQuestions, setAnsweredQuestions } =
+    useContext(GameContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-  
-  // Choose a question that hasn't been answered yet
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(null);
-  
+  const [playBackgroundMusic, setPlayBackgroundMusic] = useState(false);
+  const [playSubmitSound, setPlaySubmitSound] = useState(false);
+  const [playBackSound, setPlayBackSound] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+
+  // Simulate user interaction to allow audio playback
+  const handleUserInteraction = () => {
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+      setPlayBackgroundMusic(true); // Start the background music
+    }
+  };
+
   useEffect(() => {
-    // Get return level from query params if available
+    // Add an event listener for user interaction
+    window.addEventListener("click", handleUserInteraction);
+
+    // Cleanup the event listener
+    return () => {
+      window.removeEventListener("click", handleUserInteraction);
+    };
+  }, [hasUserInteracted]);
+
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
-    
+
     // Ensure answeredQuestions is an array
-    const safeAnsweredQuestions = Array.isArray(answeredQuestions) ? answeredQuestions : [];
-    
+    const safeAnsweredQuestions = Array.isArray(answeredQuestions)
+      ? answeredQuestions
+      : [];
+
     // Filter out questions that have already been answered
-    const availableQuestions = questions.filter((_, index) => 
-      !safeAnsweredQuestions.includes(index)
+    const availableQuestions = questions.filter(
+      (_, index) => !safeAnsweredQuestions.includes(index)
     );
-    
     if (availableQuestions.length === 0) {
       // If all questions have been answered, reset the answered questions
       if (setAnsweredQuestions) {
@@ -67,34 +93,34 @@ const LoopRunner = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (currentQuestionIndex === null) return;
-    
+
+    // Play the submit button sound
+    setPlaySubmitSound(true);
     if (
       userAnswer.trim().toLowerCase() ===
       questions[currentQuestionIndex].answer.toLowerCase()
     ) {
-      // Ensure answeredQuestions is an array before updating
-      const safeAnsweredQuestions = Array.isArray(answeredQuestions) ? answeredQuestions : [];
-      
+      const safeAnsweredQuestions = Array.isArray(answeredQuestions)
+        ? answeredQuestions
+        : [];
       // Add the current question to answered questions
       if (setAnsweredQuestions) {
         setAnsweredQuestions([...safeAnsweredQuestions, currentQuestionIndex]);
       }
-      
       // Increment powerups
       const newPowerUps = (powerUps || 0) + 1;
       if (setPowerUps) {
         setPowerUps(newPowerUps);
       }
-      
+
       setFeedback("Correct! You earned a power-up!");
       setShowSuccess(true);
-      
+
       // Get return level from URL params
       const params = new URLSearchParams(location.search);
       const returnToLevel = params.get("returnTo") || "1";
-      
       setTimeout(() => {
         // Navigate back to the specific riddle level
         navigate(`/riddle/${returnToLevel}`);
@@ -105,18 +131,22 @@ const LoopRunner = () => {
   };
 
   const handleBack = () => {
-    const params = new URLSearchParams(location.search);
-    const returnToLevel = params.get("returnTo") || "1"; // Default to level 1 if missing
-    navigate(`/mini-games-menu?returnTo=${returnToLevel}`); // Go back with correct level
+    // Play the back button sound
+    setPlayBackSound(true);
+
+    // Navigate back after a short delay
+    setTimeout(() => {
+      const params = new URLSearchParams(location.search);
+      const returnToLevel = params.get("returnTo") || "1"; // Default to level 1 if missing
+      navigate(`/mini-games-menu?returnTo=${returnToLevel}`); // Go back with correct level
+    }, 500); // Adjust the delay to match the sound duration
   };
-
-
   if (currentQuestionIndex === null) {
     return <div style={styles.container}>Loading...</div>;
   }
 
   return (
-    <div className="game-container" style={styles.container}>
+    <div className="game-container" style={styles.container} onClick={handleUserInteraction}>
       <div className="game-box" style={styles.gameBox}>
         <h2 style={styles.title}>Loop Runner</h2>
         <strong style={styles.question}>
@@ -145,7 +175,6 @@ const LoopRunner = () => {
         </form>
         {feedback && <p style={styles.feedback}>{feedback}</p>}
       </div>
-      
       {/* Success popup */}
       {showSuccess && (
         <div style={styles.overlay}>
@@ -159,6 +188,30 @@ const LoopRunner = () => {
           </div>
         </div>
       )}
+
+      {/* Background Music */}
+      <Sound
+        url={bgMusic}
+        playStatus={playBackgroundMusic ? Sound.status.PLAYING : Sound.status.STOPPED}
+        loop={true} // Loop the background music
+        volume={50} // Adjust the volume (0 to 100)
+      />
+
+      {/* Submit Button Sound */}
+      <Sound
+        url={submitSound}
+        playStatus={playSubmitSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlaySubmitSound(false)} // Reset the state after the sound finishes
+        volume={100} // Adjust the volume (0 to 100)
+      />
+
+      {/* Back Button Sound */}
+      <Sound
+        url={backSound}
+        playStatus={playBackSound ? Sound.status.PLAYING : Sound.status.STOPPED}
+        onFinishedPlaying={() => setPlayBackSound(false)} // Reset the state after the sound finishes
+        volume={100} // Adjust the volume (0 to 100)
+      />
     </div>
   );
 };
@@ -166,7 +219,7 @@ const LoopRunner = () => {
 const styles = {
   container: {
     minHeight: "100vh",
-    backgroundImage: "url('/images/wallpaper1.jpg')",
+    backgroundImage: `url(${backgroundImg})`,
     backgroundColor: "#003F66",
     display: "flex",
     justifyContent: "center",
@@ -250,6 +303,7 @@ const styles = {
     marginTop: "20px",
     fontSize: "1.2rem",
     textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive",
   },
   overlay: {
     position: "fixed",
@@ -280,6 +334,7 @@ const styles = {
     color: "#FFD700",
     marginBottom: "20px",
     lineHeight: "1.6",
+    fontFamily: "'MedievalSharp', cursive",
   },
 };
 

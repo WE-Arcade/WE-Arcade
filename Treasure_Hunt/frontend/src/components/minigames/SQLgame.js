@@ -1,42 +1,37 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { GameContext } from "../../context/GameContext";
+import Sound from "react-sound";
+import bgMusic from "../../assets/sound-effects/ind-minigame-bg-music.mp3";
+import submitSound from "../../assets/sound-effects/minigame-button-click.wav";
+import backSound from "../../assets/sound-effects/button-click.mp3";
 
 const questions = [
   {
-    story:
-    "FROM users SELECT name, email WHERE active = 1;\n ",
+    story: "FROM users SELECT name, email WHERE active = 1;\n ",
     question: "Players must fix the query to retrieve the correct user data.",
     answer: "SELECT name, email FROM users WHERE active = 1;",
     options: [
-    "SELECT name, email FROM users WHERE active = 1;",
-    "SELECT * FROM users WHERE active = 1;",
-    "SELECT name, email FROM users;",
-    "SELECT name, email WHERE active = 1;",
+      "SELECT name, email FROM users WHERE active = 1;",
+      "SELECT * FROM users WHERE active = 1;",
+      "SELECT name, email FROM users;",
+      "SELECT name, email WHERE active = 1;",
     ],
-    },
-    {
-      story: "A database administrator needs to uniquely identify each record in a table to ensure data integrity.",
-      question: "What is the primary key?",
-      answer: "Unique identifier",
-      options: [
-        "Unique identifier",
-        "Foreign key",
-        "Data type",
-        "Index"
-      ],
-    },
-    {
-      story: "A data analyst is retrieving records from a large database and needs to filter results based on a specific condition.",
-      question: "Which SQL clause is used to filter results?",
-      answer: "WHERE",
-      options: [
-        "WHERE",
-        "ORDER BY",
-        "GROUP BY",
-        "HAVING"
-      ],
-    },
+  },
+  {
+    story:
+      "A database administrator needs to uniquely identify each record in a table to ensure data integrity.",
+    question: "What is the primary key?",
+    answer: "Unique identifier",
+    options: ["Unique identifier", "Foreign key", "Data type", "Index"],
+  },
+  {
+    story:
+      "A data analyst is retrieving records from a large database and needs to filter results based on a specific condition.",
+    question: "Which SQL clause is used to filter results?",
+    answer: "WHERE",
+    options: ["WHERE", "ORDER BY", "GROUP BY", "HAVING"],
+  },
 ];
 
 const SQLGame = () => {
@@ -47,9 +42,12 @@ const SQLGame = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [feedback, setFeedback] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-
-  // Choose a question that hasn't been answered yet
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(null);
+
+  // Sound states
+  const [bgMusicStatus, setBgMusicStatus] = useState(Sound.status.STOPPED); // Background music
+  const [submitSoundStatus, setSubmitSoundStatus] = useState(Sound.status.STOPPED); // Submit sound
+  const [backSoundStatus, setBackSoundStatus] = useState(Sound.status.STOPPED); // Back sound
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -73,37 +71,52 @@ const SQLGame = () => {
       const originalIndex = questions.indexOf(availableQuestions[randomIndex]);
       setCurrentQuestionIndex(originalIndex);
     }
+    const handleUserInteraction = () => {
+      setBgMusicStatus(Sound.status.PLAYING);
+      window.removeEventListener("click", handleUserInteraction);
+    };
+
+    window.addEventListener("click", handleUserInteraction);
+
+    return () => {
+      window.removeEventListener("click", handleUserInteraction);
+    };
   }, [answeredQuestions, setAnsweredQuestions, location.search]);
 
   const handleSubmit = () => {
     if (selectedOption === null) return;
+    setSubmitSoundStatus(Sound.status.PLAYING);
+
     if (selectedOption === questions[currentQuestionIndex].answer) {
       if (setAnsweredQuestions)
         setAnsweredQuestions([...answeredQuestions, currentQuestionIndex]);
-      if (setPowerUps) setPowerUps((prevPowerUps) => prevPowerUps + 1); // Increment power-up count
-  
+      if (setPowerUps) setPowerUps((prevPowerUps) => prevPowerUps + 1);
+
       setFeedback("Correct! You earned a power-up!");
       setShowSuccess(true);
-  
-      // Get the correct return level
+
       const params = new URLSearchParams(location.search);
       const returnToLevel = params.get("returnTo") || "1";
-  
+
       setTimeout(() => {
-        navigate(`/riddle/${returnToLevel}?powerUpEarned=true`); // Ensure correct return level
+        navigate(`/riddle/${returnToLevel}?powerUpEarned=true`);
       }, 2000);
     } else {
       setFeedback("Incorrect. Try again!");
     }
   };
-  
 
   const handleBack = () => {
-    const params = new URLSearchParams(location.search);
-    const returnToLevel = params.get("returnTo") || "1"; // Default to level 1 if missing
-    navigate(`/mini-games-menu?returnTo=${returnToLevel}`); // Go back with correct level
+    // Play back sound
+    setBackSoundStatus(Sound.status.PLAYING);
+
+    // Delay navigation until the sound has finished playing
+    setTimeout(() => {
+      const params = new URLSearchParams(location.search);
+      const returnToLevel = params.get("returnTo") || "1";
+      navigate(`/mini-games-menu?returnTo=${returnToLevel}`);
+    }, 500); // Adjust the delay to match the sound duration
   };
-  
 
   if (currentQuestionIndex === null) {
     return <div style={styles.container}>Loading...</div>;
@@ -111,6 +124,28 @@ const SQLGame = () => {
 
   return (
     <div className="dsa-game-container" style={styles.container}>
+      <Sound
+        url={bgMusic}
+        playStatus={bgMusicStatus}
+        onFinishedPlaying={() => setBgMusicStatus(Sound.status.PLAYING)} // Loop the music
+        volume={50} // Set volume to 50%
+      />
+
+      {/* Submit Sound */}
+      <Sound
+        url={submitSound}
+        playStatus={submitSoundStatus}
+        onFinishedPlaying={() => setSubmitSoundStatus(Sound.status.STOPPED)} // Stop after playing
+        volume={100}
+      />
+
+      {/* Back Sound */}
+      <Sound
+        url={backSound}
+        playStatus={backSoundStatus}
+        onFinishedPlaying={() => setBackSoundStatus(Sound.status.STOPPED)} // Stop after playing
+        volume={100}
+      />
       <div className="game-box" style={styles.gameBox}>
         <h2 style={styles.title}>Data Structure Challenge</h2>
         <p style={styles.story}>{questions[currentQuestionIndex].story}</p>
@@ -173,7 +208,9 @@ const SQLGame = () => {
           <div style={styles.popup}>
             <h3 style={styles.popupTitle}>Success!</h3>
             <p style={styles.popupContent}>
-              You've earned a power-up! Redirecting...
+            You've earned a power-up!
+              <br />
+              Redirecting to the riddle page...
             </p>
           </div>
         </div>
@@ -305,6 +342,7 @@ const styles = {
     marginTop: "20px",
     fontSize: "1.2rem",
     textAlign: "center",
+    fontFamily: "'MedievalSharp', cursive",
   },
   overlay: {
     position: "fixed",
@@ -335,6 +373,7 @@ const styles = {
     color: "#FFD700",
     marginBottom: "20px",
     lineHeight: "1.6",
+    fontFamily: "'MedievalSharp', cursive",
   },
   story: {
     color: "#FFD700",
@@ -343,6 +382,4 @@ const styles = {
     fontFamily: "'MedievalSharp', cursive",
   }
 };
-
 export default SQLGame;
-
