@@ -12,8 +12,7 @@ WE Arcade is a cohort-wide initiative created by 103 students of Cohort 5 as par
 - **Aruvi Badrinath** - Instructor, Technical Skills 
 - **Anshul Yadav** - Instructor, Technical Skills
 - **Anasuya Sahoo** - Instructor, Technical Skills
-
-- 
+ 
 ---
 
 ## Core Coordinators
