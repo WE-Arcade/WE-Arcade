@@ -3,7 +3,7 @@
 **Welcome to WE Arcade!**  
 A creative celebration of innovation, teamwork, and the Women Engineers (WE) journey.
 
-WE Arcade is a collection of interactive games and storytelling projects built by **Cohort 5** of the **Women Engineers Program by TalentSprint supported by Google**. Developed as part of the **Design Thinking module**. This initiative showcases the power of collaboration, creativity, and purpose-driven tech. This project was made by a total of 103 students. Each one of them is listed along with their roles in the Contributors.md file.
+WE Arcade is a collection of interactive games and storytelling projects built by **Cohort 5** of the [**Women Engineers Program by TalentSprint supported by Google**](https://we.talentsprint.com/). Developed as part of the **Design Thinking module**. This initiative showcases the power of collaboration, creativity, and purpose-driven tech. This project was made by a total of 103 students. Each one of them is listed along with their roles in the Contributors.md file.
 
 ---
 
