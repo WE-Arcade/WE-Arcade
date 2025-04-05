@@ -61,6 +61,7 @@ Check out the full arcade experience here:
 We welcome students at all levels of the WE program and the mentors to suggest improvements and changes in this project.
 
 ---
+
 ## A Note of Gratitude
 
 WE Arcade is more than a compilation of games—it's a heartfelt thank-you to the mentors who shaped our journey and a celebration of the growth, laughter, and memories we shared during the program.
